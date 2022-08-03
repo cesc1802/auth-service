@@ -1,0 +1,5 @@
+dev:
+  dialect: mysql
+  datasource: auth_service:admin@1802@tcp(localhost:3306)/auth_service?parseTime=true
+  dir: migrations
+  table: schema_migrations
