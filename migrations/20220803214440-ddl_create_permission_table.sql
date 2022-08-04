@@ -1,14 +1,13 @@
-
 -- +migrate Up
 CREATE TABLE permissions
 (
-    id         int          not null auto_increment,
-    name       varchar(100) not null,
-    desc       varchar(255),
-    status     int          not null default 1,
-    created_at timestamp null default current_timestamp,
-    updated_at timestamp null default current_timestamp on update current_timestamp,
-    deleted_at timestamp null,
+    id          int          not null auto_increment,
+    name        varchar(100) not null,
+    description varchar(255),
+    status      int          not null default 1,
+    created_at  timestamp null default current_timestamp,
+    updated_at  timestamp null default current_timestamp on update current_timestamp,
+    deleted_at  timestamp null,
     primary key (id)
 
 ) ENGINE = InnoDB
