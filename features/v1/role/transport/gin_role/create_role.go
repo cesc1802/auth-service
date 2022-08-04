@@ -20,7 +20,7 @@ import (
 // @Success 	200 		{object}
 // @Failure 	400 		{object} 	common.AppError
 // @Failure 	404 		{object} 	common.AppError
-// @Router 		/api/v1/roles/profile 	[post]
+// @Router 		/api/v1/roles 			[post]
 func CreateRole(appCtx app_context.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var form dto.CreateRoleRequest
