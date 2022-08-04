@@ -1,0 +1,62 @@
+definitions:
+  common.AppError:
+    properties:
+      error_key:
+        type: string
+      log:
+        type: string
+      message:
+        type: string
+      status_code:
+        type: integer
+      ve:
+        items:
+          $ref: '#/definitions/common.ValidationErrorField'
+        type: array
+    type: object
+  common.ValidationErrorField:
+    properties:
+      errorMessage:
+        type: string
+      field:
+        type: string
+      tag:
+        type: string
+    type: object
+info:
+  contact:
+    email: thuocnv1802@gmail.com
+    name: Cesc Nguyen
+  description: This is Auth Service API.
+  title: Auth Service API
+  version: "1.0"
+paths:
+  /api/v1/roles:
+    post:
+      consumes:
+      - application/json
+      description: Create Role
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Role
+      tags:
+      - Roles
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
