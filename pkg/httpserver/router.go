@@ -16,14 +16,12 @@ import (
 
 type MyHttpServerConfig struct {
 	mode string
-	host string
 	port string
 }
 
-func NewMyHttpServerConfig(mode, host, port string) *MyHttpServerConfig {
+func NewMyHttpServerConfig(mode, port string) *MyHttpServerConfig {
 	return &MyHttpServerConfig{
 		mode: mode,
-		host: host,
 		port: port,
 	}
 }
@@ -92,22 +90,11 @@ func (s *myHttpServer) Start() error {
 	}
 
 	s.Server = &http.Server{
-		Addr:    fmt.Sprintf("%s:%s", s.cnf.host, s.cnf.port),
+		Addr:    fmt.Sprintf(":%s", s.cnf.port),
 		Handler: s.engine,
 	}
 
-	//lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", s.cnf.host, s.cnf.port))
-	//if err != nil {
-	//	s.logger.Infof("Listening error: %v", err)
-	//	return err
-	//}
-	//
-	//err = s.Serve(lis)
-	//
-	//if !errors.Is(err, http.ErrServerClosed) {
-	//	return err
-	//}
-	s.logger.Infof("server host %s and port %s and server mode %s", s.cnf.host, s.cnf.port, s.cnf.mode)
+	s.logger.Infof("server host %s and port %s and server mode %s", s.cnf.port, s.cnf.mode)
 
 	return nil
 }
