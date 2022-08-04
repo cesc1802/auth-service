@@ -17,7 +17,7 @@ import (
 // @Accept  	json
 // @Produce  	json
 // @Security 	ApiKeyAuth
-// @Success 	200 		{object}
+// @Success 	200
 // @Failure 	400 		{object} 	common.AppError
 // @Failure 	404 		{object} 	common.AppError
 // @Router 		/api/v1/roles 			[post]

@@ -10,8 +10,8 @@ type appContext struct {
 	db *gorm.DB
 }
 
-func NewAppContext() *appContext {
-	return &appContext{}
+func NewAppContext(db *gorm.DB) *appContext {
+	return &appContext{db: db}
 }
 
 func (a *appContext) GetAppGorm() *gorm.DB {

@@ -1,7 +1,13 @@
 package http
 
 import (
+	"github.com/cesc1802/auth-service/app_context"
+	v1 "github.com/cesc1802/auth-service/cmd/http/v1"
+	"github.com/cesc1802/auth-service/pkg/database"
+	"github.com/cesc1802/auth-service/pkg/httpserver"
+	"github.com/cesc1802/auth-service/pkg/i18n"
 	"github.com/cesc1802/auth-service/pkg/logger"
+	"github.com/facebookgo/grace/gracehttp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -70,25 +76,25 @@ func NewServerCommand() *cobra.Command {
 			)
 			defer l.Sync()
 
-			//httpConfig := httpserver.NewMyHttpServerConfig(viper.GetString(ServMode),
-			//	viper.GetString("server-host"), viper.GetString(ServPort))
-			//
-			//gormConfig := database.NewAppGormConfig(viper.GetString(DbHost),
-			//	viper.GetString(DbPort), viper.GetString(DbUserName),
-			//	viper.GetString(DbName), viper.GetString(DbPassword))
-			//
-			//appI18nConfig := i18n.NewI18nConfig(viper.GetStringSlice(ServSupportLanguages))
-			//appI18n, _ := i18n.NewI18n(appI18nConfig)
-			//
-			//router := httpserver.New(httpConfig, appI18n)
-			//appGorm := database.NewAppGorm(gormConfig)
-			//
-			//appContext := app_context.NewAppContext()
+			httpConfig := httpserver.NewMyHttpServerConfig(viper.GetString(ServMode),
+				viper.GetString(ServPort))
 
-			//router.AddHandler()
-			//router.Start()
+			gormConfig := database.NewAppGormConfig(viper.GetString(DbHost),
+				viper.GetString(DbPort), viper.GetString(DbUserName),
+				viper.GetString(DbName), viper.GetString(DbPassword))
 
-			//gracehttp.Serve(router.Server)
+			appI18nConfig := i18n.NewI18nConfig(viper.GetStringSlice(ServSupportLanguages))
+			appI18n, _ := i18n.NewI18n(appI18nConfig)
+
+			router := httpserver.New(httpConfig, appI18n)
+			appGorm := database.NewAppGorm(gormConfig)
+
+			appContext := app_context.NewAppContext(appGorm.GetDB())
+
+			router.AddHandler(v1.SetupRoute(appContext))
+			router.Start()
+
+			gracehttp.Serve(router.Server)
 			return nil
 		},
 	}

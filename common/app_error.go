@@ -77,6 +77,10 @@ func ErrInternal(err error) *AppError {
 	return NewErrorResponse(err, "internal error", err.Error(), "ERR_INTERNAL")
 }
 
+func ErrRecordNotFound(err error) *AppError {
+	return NewCustomError(err, "record not found", "ERR_RECORD_NOT_FOUND")
+}
+
 func ErrCannotListEntity(entity string, err error) *AppError {
 	return NewCustomError(
 		err,

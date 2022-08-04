@@ -11,3 +11,7 @@ type Role struct {
 func (r Role) TableName() string {
 	return "roles"
 }
+
+func (r Role) EntityName() string {
+	return "role"
+}
