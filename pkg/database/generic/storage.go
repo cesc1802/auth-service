@@ -101,7 +101,7 @@ func (store *CRUDStore[TModel]) FindOneByCondition(ctx context.Context, queries 
 
 	if err := db.Model(result).First(&result).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, common.ErrCannotGetEntity("", err)
+			return nil, common.ErrRecordNotFound(err)
 		}
 	}
 
