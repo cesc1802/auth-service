@@ -50,11 +50,10 @@ func registerFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String(ServMode, "debug", "http server mode. eg: debug/release.")
 
 	//setup env for database
-	//admin:12345678@tcp(auth-db.c0z6htwdd0jx.us-east-1.rds.amazonaws.com:3306)/auth_service?parseTime=true
-	cmd.PersistentFlags().String(DbUserName, "localhost", "database username")
-	cmd.PersistentFlags().String(DbPassword, "abcd1235", "database password")
+	cmd.PersistentFlags().String(DbUserName, "admin", "database username")
+	cmd.PersistentFlags().String(DbPassword, "admin@1802", "database password")
 	cmd.PersistentFlags().String(DbName, "auth_service", "database name")
-	cmd.PersistentFlags().String(DbHost, "", "database host used to connect")
+	cmd.PersistentFlags().String(DbHost, "localhost", "database host used to connect")
 	cmd.PersistentFlags().String(DbPort, "3306", "database host used to connect")
 	cmd.PersistentFlags().String(DbLocation, "Local", "database location")
 	cmd.PersistentFlags().Uint(DbMaxOpenConn, 20, "")

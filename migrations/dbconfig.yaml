@@ -1,11 +1,11 @@
 local:
   dialect: mysql
-  datasource: auth_service:admin@1802@tcp(localhost:3306)/auth_service?parseTime=true
+  datasource: admin:admin@1802@tcp(localhost:3306)/auth_service?parseTime=true
   dir: migrations
   table: schema_migrations
 
 dev:
   dialect: mysql
-  datasource: admin:12345678@tcp(auth-db.c0z6htwdd0jx.us-east-1.rds.amazonaws.com:3306)/auth_service?parseTime=true
+  datasource: ${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:${MYSQL_PORT})/${MYSQL_DB}?parseTime=true
   dir: migrations
   table: schema_migrations
