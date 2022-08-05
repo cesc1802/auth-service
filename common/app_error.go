@@ -25,6 +25,7 @@ type ValidationErrorField struct {
 }
 
 var ErrRecordNotFound = NewCustomError(nil, "record not found", "ERR_RECORD_NOT_FOUND")
+var ErrCopyData = NewCustomError(nil, "copy data failed", "ERR_COPY_DATA_FAILED")
 
 func ValidationError(msg string, key string, ve []ValidationErrorField) *AppError {
 	appErr := NewErrorResponse(nil, msg, msg, key)

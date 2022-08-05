@@ -30,6 +30,13 @@ definitions:
       name:
         type: string
     type: object
+  dto.UpdateRoleRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
 info:
   contact:
     email: thuocnv1802@gmail.com
@@ -95,6 +102,40 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Delete Role
+      tags:
+      - Roles
+    put:
+      consumes:
+      - application/json
+      description: Update Role
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Role
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Role
       tags:
       - Roles
 securityDefinitions:
