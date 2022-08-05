@@ -46,6 +46,46 @@ info:
   version: "1.0"
 paths:
   /api/v1/roles:
+    get:
+      consumes:
+      - application/json
+      description: List Role
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: role name
+        in: query
+        name: name
+        type: string
+      - description: role description
+        in: query
+        name: description
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: List Role
+      tags:
+      - Roles
     post:
       consumes:
       - application/json

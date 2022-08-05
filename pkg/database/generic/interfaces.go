@@ -19,7 +19,7 @@ type IUpdateStore[T any] interface {
 }
 
 type IFindAllStore[T any] interface {
-	FindAll(ctx context.Context, queries ...QueryFunc) ([]T, error)
+	FindAll(ctx context.Context, queries ...QueryFunc) ([]T, *int64, error)
 }
 
 type IDeleteStore[T any] interface {

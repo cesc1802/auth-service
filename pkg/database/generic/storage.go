@@ -13,7 +13,7 @@ type CRUDStore[T ifaces.Modeler] struct {
 	db *gorm.DB
 }
 
-func (store *CRUDStore[TModel]) FindAll(ctx context.Context, queries ...QueryFunc) ([]TModel, error) {
+func (store *CRUDStore[TModel]) FindAll(ctx context.Context, queries ...QueryFunc) ([]TModel, *int64, error) {
 	db := store.db
 
 	var results []TModel
@@ -26,10 +26,14 @@ func (store *CRUDStore[TModel]) FindAll(ctx context.Context, queries ...QueryFun
 
 	var model *TModel
 	if err := db.Model(model).Find(&results).Error; err != nil {
-		return nil, err
+		return nil, nil, err
+	}
+	var count int64
+	if err := db.Model(model).Count(&count).Error; err != nil {
+		return nil, nil, err
 	}
 
-	return results, nil
+	return results, &count, nil
 }
 
 func (store *CRUDStore[TModel]) Update(ctx context.Context, model *TModel, queries ...QueryFunc) error {
