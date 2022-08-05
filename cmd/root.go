@@ -25,11 +25,11 @@ func init() {
 			dir, _ := os.Getwd()
 			viper.AddConfigPath(dir)
 			viper.SetConfigName("config/")
-			viper.SetEnvPrefix("")
 		}
 
 		replacer := strings.NewReplacer("-", "_")
 		viper.SetEnvKeyReplacer(replacer)
+		viper.SetConfigType("yaml")
 		viper.AutomaticEnv()
 
 		// If a config file is found, read it in.

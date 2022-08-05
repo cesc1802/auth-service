@@ -24,7 +24,12 @@ func publicRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
 func privateRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
 	return func(e *gin.RouterGroup) {
 		// Roles
-		e.POST("/roles", gin_role.CreateRole(appCtx))
+		roles := e.Group("/roles")
+		{
+			roles.POST("", gin_role.CreateRole(appCtx))
+			roles.DELETE("/:id", gin_role.DeleteRole(appCtx))
+		}
+
 	}
 }
 
