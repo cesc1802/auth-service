@@ -94,7 +94,7 @@ func (s *myHttpServer) Start() error {
 		Handler: s.engine,
 	}
 
-	s.logger.Infof("server host %s and port %s and server mode %s", s.cnf.port, s.cnf.mode)
+	s.logger.Infof("server port %s and server mode %s", s.cnf.port, s.cnf.mode)
 
 	return nil
 }

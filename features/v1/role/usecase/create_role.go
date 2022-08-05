@@ -31,7 +31,7 @@ func (uc *ucCreateRole) CreateRole(ctx context.Context, form *dto.CreateRoleRequ
 	})
 
 	if err != nil && err != common.ErrRecordNotFound(err) {
-		return err
+		return common.ErrCannotGetEntity(domain.EntityName, err)
 	}
 
 	if role != nil {
@@ -45,7 +45,7 @@ func (uc *ucCreateRole) CreateRole(ctx context.Context, form *dto.CreateRoleRequ
 		},
 	}
 	if err := uc.store.Create(ctx, &data); err != nil {
-		return err
+		return common.ErrCannotCreateEntity(domain.EntityName, err)
 	}
 
 	return nil

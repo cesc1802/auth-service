@@ -15,7 +15,7 @@ import (
 const (
 	DbUserName    = "db-username"
 	DbPassword    = "db-password"
-	DbName        = "db-database-name"
+	DbName        = "db-name"
 	DbHost        = "db-host"
 	DbPort        = "db-port"
 	DbCharset     = "db-charset"
@@ -49,6 +49,17 @@ func registerFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String(ServPort, "7172", "http server port listen")
 	cmd.PersistentFlags().String(ServMode, "debug", "http server mode. eg: debug/release.")
 
+	//setup env for database
+	//admin:12345678@tcp(auth-db.c0z6htwdd0jx.us-east-1.rds.amazonaws.com:3306)/auth_service?parseTime=true
+	cmd.PersistentFlags().String(DbUserName, "admin", "database username")
+	cmd.PersistentFlags().String(DbPassword, "12345678", "database password")
+	cmd.PersistentFlags().String(DbName, "auth_service", "database name")
+	cmd.PersistentFlags().String(DbHost, "auth-db.c0z6htwdd0jx.us-east-1.rds.amazonaws.com", "database host used to connect")
+	cmd.PersistentFlags().String(DbPort, "3306", "database host used to connect")
+	cmd.PersistentFlags().String(DbLocation, "Local", "database location")
+	cmd.PersistentFlags().Uint(DbMaxOpenConn, 20, "")
+	cmd.PersistentFlags().Uint(DbMaxIdleConn, 20, "")
+
 	cmd.PersistentFlags().StringSlice(ServSupportLanguages, []string{"en", "vi"},
 		"server language support when response")
 
@@ -59,6 +70,15 @@ func registerFlags(cmd *cobra.Command) {
 
 	_ = viper.BindPFlag(ServPort, cmd.PersistentFlags().Lookup(ServPort))
 	_ = viper.BindPFlag(ServMode, cmd.PersistentFlags().Lookup(ServMode))
+
+	viper.BindPFlag(DbUserName, cmd.PersistentFlags().Lookup(DbUserName))
+	viper.BindPFlag(DbPassword, cmd.PersistentFlags().Lookup(DbPassword))
+	viper.BindPFlag(DbName, cmd.PersistentFlags().Lookup(DbName))
+	viper.BindPFlag(DbHost, cmd.PersistentFlags().Lookup(DbHost))
+	viper.BindPFlag(DbPort, cmd.PersistentFlags().Lookup(DbPort))
+	viper.BindPFlag(DbLocation, cmd.PersistentFlags().Lookup(DbLocation))
+	viper.BindPFlag(DbMaxOpenConn, cmd.PersistentFlags().Lookup(DbMaxOpenConn))
+	viper.BindPFlag(DbMaxIdleConn, cmd.PersistentFlags().Lookup(DbMaxIdleConn))
 
 	_ = viper.BindPFlag(ServSupportLanguages, cmd.PersistentFlags().Lookup(ServSupportLanguages))
 }

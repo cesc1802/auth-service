@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/cesc1802/auth-service/app_context"
+	"github.com/cesc1802/auth-service/features/v1/role/transport/gin_role"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -22,7 +23,8 @@ func publicRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
 
 func privateRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
 	return func(e *gin.RouterGroup) {
-
+		// Roles
+		e.POST("/roles", gin_role.CreateRole(appCtx))
 	}
 }
 
