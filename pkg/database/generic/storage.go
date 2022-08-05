@@ -64,7 +64,13 @@ func (store *CRUDStore[TModel]) Delete(ctx context.Context, id uint, queries ...
 		}
 	}
 
-	if err := tx.Model(model).Where("id = ?", id).Delete(nil).Error; err != nil {
+	if err := tx.Model(model).Where("id = ?", id).Delete(&model).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
