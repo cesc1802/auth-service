@@ -37,6 +37,17 @@ const docTemplate = `{
                     "Roles"
                 ],
                 "summary": "Create Role",
+                "parameters": [
+                    {
+                        "description": "Create Role",
+                        "name": "role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateRoleRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": ""
@@ -91,6 +102,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tag": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateRoleRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }

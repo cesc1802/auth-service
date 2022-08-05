@@ -24,6 +24,8 @@ type ValidationErrorField struct {
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
+var ErrRecordNotFound = NewCustomError(nil, "record not found", "ERR_RECORD_NOT_FOUND")
+
 func ValidationError(msg string, key string, ve []ValidationErrorField) *AppError {
 	appErr := NewErrorResponse(nil, msg, msg, key)
 	appErr.ValidationError = ve
@@ -77,9 +79,9 @@ func ErrInternal(err error) *AppError {
 	return NewErrorResponse(err, "internal error", err.Error(), "ERR_INTERNAL")
 }
 
-func ErrRecordNotFound(err error) *AppError {
-	return NewCustomError(err, "record not found", "ERR_RECORD_NOT_FOUND")
-}
+//func ErrRecordNotFound() *AppError {
+//	return NewCustomError(nil, "record not found", "ERR_RECORD_NOT_FOUND")
+//}
 
 func ErrCannotListEntity(entity string, err error) *AppError {
 	return NewCustomError(

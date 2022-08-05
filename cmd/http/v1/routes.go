@@ -2,11 +2,11 @@ package v1
 
 import (
 	"github.com/cesc1802/auth-service/app_context"
+	"github.com/cesc1802/auth-service/docs"
 	"github.com/cesc1802/auth-service/features/v1/role/transport/gin_role"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/swag/example/basic/docs"
 	"net/http"
 )
 

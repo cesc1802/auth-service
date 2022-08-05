@@ -1,0 +1,6 @@
+package errorcode
+
+const (
+	ERR_CANNOT_GET_ROLE = "ERR_CANNOT_GET_ROLE"
+	ERR_ROLE_EXISTING   = "ERR_ROLE_EXISTING"
+)

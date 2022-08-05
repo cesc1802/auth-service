@@ -30,7 +30,7 @@ func (uc *ucCreateRole) CreateRole(ctx context.Context, form *dto.CreateRoleRequ
 		return db.Where("name = ?", form.Name)
 	})
 
-	if err != nil && err != common.ErrRecordNotFound(err) {
+	if err != nil && err != common.ErrRecordNotFound {
 		return common.ErrCannotGetEntity(domain.EntityName, err)
 	}
 

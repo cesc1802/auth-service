@@ -23,6 +23,13 @@ definitions:
       tag:
         type: string
     type: object
+  dto.CreateRoleRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
 info:
   contact:
     email: thuocnv1802@gmail.com
@@ -36,6 +43,13 @@ paths:
       consumes:
       - application/json
       description: Create Role
+      parameters:
+      - description: Create Role
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRoleRequest'
       produces:
       - application/json
       responses:

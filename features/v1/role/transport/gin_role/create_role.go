@@ -18,6 +18,7 @@ import (
 // @Produce  	json
 // @Security 	ApiKeyAuth
 // @Success 	200
+// @Param 		role		body		dto.CreateRoleRequest 	true "Create Role"
 // @Failure 	400 		{object} 	common.AppError
 // @Failure 	404 		{object} 	common.AppError
 // @Router 		/api/v1/roles 			[post]
