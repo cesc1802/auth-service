@@ -1,6 +1,6 @@
 package dto
 
-type UpdateRoleRequest struct {
+type UpdatePermissionRequest struct {
 	Name        *string `json:"name"`
 	Description *string `json:"description"`
 }

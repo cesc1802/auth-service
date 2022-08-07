@@ -8,13 +8,14 @@ import (
 )
 
 const (
-	EntityName = "role"
+	EntityName = "Permission"
 )
 
 var (
-	ErrRoleNameIsExisting = common.NewCustomError(errors.New("role name is existing"), "role name existing", errorcode.ERR_ROLE_EXISTING)
+	ErrPermissionNameIsExisting = common.NewCustomError(errors.New("permission name is existing"),
+		"permission name existing", errorcode.ERR_PERMISSION_EXISTING)
 )
 
-type Role struct {
-	entities.Role
+type Permission struct {
+	entities.Permission
 }

@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"github.com/cesc1802/auth-service/common"
-	"github.com/cesc1802/auth-service/features/v1/role/domain"
-	"github.com/cesc1802/auth-service/features/v1/role/dto"
+	"github.com/cesc1802/auth-service/features/v1/Permission/domain"
+	"github.com/cesc1802/auth-service/features/v1/Permission/dto"
 	"github.com/cesc1802/auth-service/pkg/database"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
 	"github.com/cesc1802/auth-service/pkg/paging"
@@ -12,22 +12,22 @@ import (
 )
 
 type ListStore interface {
-	generic.IFindAllStore[domain.Role]
+	generic.IFindAllStore[domain.Permission]
 }
 
-type ucListRole struct {
+type ucListPermission struct {
 	store ListStore
 }
 
-func NewUseCaseListStore(store ListStore) *ucListRole {
-	return &ucListRole{
+func NewUseCaseListStore(store ListStore) *ucListPermission {
+	return &ucListPermission{
 		store: store,
 	}
 }
 
-func (uc *ucListRole) ListRole(ctx context.Context, page *paging.Paging,
-	filter *dto.Filter) (dto.ListRoleResponse, error) {
-	roles, total, err := uc.store.FindAll(ctx, database.QueryPage(page.Offset, page.Limit),
+func (uc *ucListPermission) ListPermission(ctx context.Context, page *paging.Paging,
+	filter *dto.Filter) (dto.ListPermissionResponse, error) {
+	Permissions, total, err := uc.store.FindAll(ctx, database.QueryPage(page.Offset, page.Limit),
 		database.Condition[string]("name", filter.Name),
 		database.Condition[string]("description", filter.Description))
 
@@ -35,8 +35,8 @@ func (uc *ucListRole) ListRole(ctx context.Context, page *paging.Paging,
 		return nil, common.ErrCannotListEntity(domain.EntityName, err)
 	}
 
-	var results dto.ListRoleResponse
-	if err := copier.Copy(&results, roles); err != nil {
+	var results dto.ListPermissionResponse
+	if err := copier.Copy(&results, Permissions); err != nil {
 		return nil, common.ErrCopyData
 	}
 	page.Total = *total

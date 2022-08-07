@@ -4,29 +4,29 @@ import (
 	"context"
 	"github.com/cesc1802/auth-service/common"
 	"github.com/cesc1802/auth-service/entities"
-	"github.com/cesc1802/auth-service/features/v1/role/domain"
-	"github.com/cesc1802/auth-service/features/v1/role/dto"
+	"github.com/cesc1802/auth-service/features/v1/Permission/domain"
+	"github.com/cesc1802/auth-service/features/v1/Permission/dto"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
 	"gorm.io/gorm"
 )
 
-type CreateRoleStore interface {
-	generic.IFindOneByConditionStore[domain.Role]
-	generic.ICreateStore[domain.Role]
+type CreatePermissionStore interface {
+	generic.IFindOneByConditionStore[domain.Permission]
+	generic.ICreateStore[domain.Permission]
 }
 
-type ucCreateRole struct {
-	store CreateRoleStore
+type ucCreatePermission struct {
+	store CreatePermissionStore
 }
 
-func NewUseCaseCreateRole(store CreateRoleStore) *ucCreateRole {
-	return &ucCreateRole{
+func NewUseCaseCreatePermission(store CreatePermissionStore) *ucCreatePermission {
+	return &ucCreatePermission{
 		store: store,
 	}
 }
 
-func (uc *ucCreateRole) CreateRole(ctx context.Context, form *dto.CreateRoleRequest) error {
-	role, err := uc.store.FindOneByCondition(ctx, func(db *gorm.DB) *gorm.DB {
+func (uc *ucCreatePermission) CreatePermission(ctx context.Context, form *dto.CreatePermissionRequest) error {
+	Permission, err := uc.store.FindOneByCondition(ctx, func(db *gorm.DB) *gorm.DB {
 		return db.Where("name = ?", form.Name)
 	})
 
@@ -34,12 +34,12 @@ func (uc *ucCreateRole) CreateRole(ctx context.Context, form *dto.CreateRoleRequ
 		return common.ErrCannotGetEntity(domain.EntityName, err)
 	}
 
-	if role != nil {
-		return domain.ErrRoleNameIsExisting
+	if Permission != nil {
+		return domain.ErrPermissionNameIsExisting
 	}
 
-	data := domain.Role{
-		Role: entities.Role{
+	data := domain.Permission{
+		Permission: entities.Permission{
 			Name:        form.Name,
 			Description: form.Description,
 		},

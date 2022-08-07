@@ -3,27 +3,27 @@ package usecase
 import (
 	"context"
 	"github.com/cesc1802/auth-service/common"
-	"github.com/cesc1802/auth-service/features/v1/role/domain"
+	"github.com/cesc1802/auth-service/features/v1/Permission/domain"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
 	"gorm.io/gorm"
 )
 
-type DeleteRoleStore interface {
-	generic.IFindOneByConditionStore[domain.Role]
-	generic.IDeleteStore[domain.Role]
+type DeletePermissionStore interface {
+	generic.IFindOneByConditionStore[domain.Permission]
+	generic.IDeleteStore[domain.Permission]
 }
 
-type ucDeleteRole struct {
-	store DeleteRoleStore
+type ucDeletePermission struct {
+	store DeletePermissionStore
 }
 
-func NewUseCaseDeleteStore(store DeleteRoleStore) *ucDeleteRole {
-	return &ucDeleteRole{
+func NewUseCaseDeleteStore(store DeletePermissionStore) *ucDeletePermission {
+	return &ucDeletePermission{
 		store: store,
 	}
 }
 
-func (uc *ucDeleteRole) DeleteRole(ctx context.Context, id uint) error {
+func (uc *ucDeletePermission) DeletePermission(ctx context.Context, id uint) error {
 	_, err := uc.store.FindOneByCondition(ctx, func(db *gorm.DB) *gorm.DB {
 		return db.Where("id = ?", id)
 	})

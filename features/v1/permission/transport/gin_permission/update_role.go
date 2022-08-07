@@ -1,4 +1,4 @@
-package gin_Permission
+package gin_permission
 
 import (
 	"github.com/cesc1802/auth-service/app_context"
@@ -21,7 +21,7 @@ import (
 // @Success 	200
 // @Failure 	400 		{object} 	common.AppError
 // @Failure 	404 		{object} 	common.AppError
-// @Router 		/api/v1/Permissions/{id} 		[put]
+// @Router 		/api/v1/permissions/{id} 		[put]
 func UpdatePermission(appCtx app_context.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		extCtx := extention.NewContextExtension(c)

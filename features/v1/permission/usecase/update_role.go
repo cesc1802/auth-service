@@ -3,30 +3,30 @@ package usecase
 import (
 	"context"
 	"github.com/cesc1802/auth-service/common"
-	"github.com/cesc1802/auth-service/features/v1/role/domain"
-	"github.com/cesc1802/auth-service/features/v1/role/dto"
+	"github.com/cesc1802/auth-service/features/v1/Permission/domain"
+	"github.com/cesc1802/auth-service/features/v1/Permission/dto"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
 type UpdateStore interface {
-	generic.IFindOneByConditionStore[domain.Role]
-	generic.IUpdateStore[domain.Role]
+	generic.IFindOneByConditionStore[domain.Permission]
+	generic.IUpdateStore[domain.Permission]
 }
 
-type ucUpdateRole struct {
+type ucUpdatePermission struct {
 	store UpdateStore
 }
 
-func NewUseCaseUpdateRole(store UpdateStore) *ucUpdateRole {
-	return &ucUpdateRole{
+func NewUseCaseUpdatePermission(store UpdateStore) *ucUpdatePermission {
+	return &ucUpdatePermission{
 		store: store,
 	}
 }
 
-func (uc *ucUpdateRole) UpdateRole(ctx context.Context, id uint, form *dto.UpdateRoleRequest) error {
-	role, err := uc.store.FindOneByCondition(ctx, func(db *gorm.DB) *gorm.DB {
+func (uc *ucUpdatePermission) UpdatePermission(ctx context.Context, id uint, form *dto.UpdatePermissionRequest) error {
+	Permission, err := uc.store.FindOneByCondition(ctx, func(db *gorm.DB) *gorm.DB {
 		return db.Where("id = ?", id)
 	})
 
@@ -34,10 +34,10 @@ func (uc *ucUpdateRole) UpdateRole(ctx context.Context, id uint, form *dto.Updat
 		return common.ErrCannotGetEntity(domain.EntityName, err)
 	}
 
-	if err := copier.Copy(role, form); err != nil {
+	if err := copier.Copy(Permission, form); err != nil {
 		return common.ErrCopyData
 	}
-	if err := uc.store.Update(ctx, role); err != nil {
+	if err := uc.store.Update(ctx, Permission); err != nil {
 		return common.ErrCannotUpdateEntity(domain.EntityName, err)
 	}
 

@@ -1,4 +1,4 @@
-package gin_Permission
+package gin_permission
 
 import (
 	"github.com/cesc1802/auth-service/app_context"
@@ -19,9 +19,9 @@ import (
 // @Security 	ApiKeyAuth
 // @Success 	200
 // @Param 		Permission		body		dto.CreatePermissionRequest 	true "Create Permission"
-// @Failure 	400 		{object} 	common.AppError
-// @Failure 	404 		{object} 	common.AppError
-// @Router 		/api/v1/Permissions 			[post]
+// @Failure 	400 			{object} 	common.AppError
+// @Failure 	404 			{object} 	common.AppError
+// @Router 		/api/v1/permissions 			[post]
 func CreatePermission(appCtx app_context.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var form dto.CreatePermissionRequest
