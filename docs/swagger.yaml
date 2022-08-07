@@ -23,7 +23,21 @@ definitions:
       tag:
         type: string
     type: object
+  dto.CreatePermissionRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
   dto.CreateRoleRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.UpdatePermissionRequest:
     properties:
       description:
         type: string
@@ -45,6 +59,139 @@ info:
   title: Auth Service API
   version: "1.0"
 paths:
+  /api/v1/permissions:
+    get:
+      consumes:
+      - application/json
+      description: List Permission
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: Permission name
+        in: query
+        name: name
+        type: string
+      - description: Permission description
+        in: query
+        name: description
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: List Permission
+      tags:
+      - Permissions
+    post:
+      consumes:
+      - application/json
+      description: Create Permission
+      parameters:
+      - description: Create Permission
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Permission
+      tags:
+      - Permissions
+  /api/v1/permissions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Permission
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Permission
+      tags:
+      - Permissions
+    put:
+      consumes:
+      - application/json
+      description: Update Permission
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Permission
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Permission
+      tags:
+      - Permissions
   /api/v1/roles:
     get:
       consumes:
