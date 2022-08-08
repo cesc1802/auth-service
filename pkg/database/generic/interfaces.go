@@ -30,6 +30,10 @@ type IDeleteStore[T any] interface {
 	Delete(ctx context.Context, id uint, queries ...QueryFunc) error
 }
 
+type CountStore[T any] interface {
+	Count(ctx context.Context, queries ...QueryFunc) (*int64, error)
+}
+
 //type ICRUDStore[T any] interface {
 //	IFindStore[T]
 //	ICreateStore[T]

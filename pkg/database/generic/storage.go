@@ -36,6 +36,25 @@ func (store *CRUDStore[TModel]) FindAll(ctx context.Context, queries ...QueryFun
 	return results, &count, nil
 }
 
+func (store *CRUDStore[TModel]) Count(ctx context.Context, queries ...QueryFunc) (*int64, error) {
+	db := store.db
+
+	if len(queries) > 0 {
+		for _, handler := range queries {
+			db = handler(db)
+		}
+	}
+
+	var model *TModel
+
+	var count int64
+	if err := db.Model(model).Count(&count).Error; err != nil {
+		return nil, err
+	}
+
+	return &count, nil
+}
+
 func (store *CRUDStore[TModel]) Update(ctx context.Context, model *TModel, queries ...QueryFunc) error {
 	tx := store.db.Begin()
 
