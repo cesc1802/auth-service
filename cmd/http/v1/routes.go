@@ -5,6 +5,7 @@ import (
 	"github.com/cesc1802/auth-service/docs"
 	"github.com/cesc1802/auth-service/features/v1/permission/transport/gin_permission"
 	"github.com/cesc1802/auth-service/features/v1/role/transport/gin_role"
+	"github.com/cesc1802/auth-service/features/v1/role_permissions/transport/gin_role_permission"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -38,6 +39,11 @@ func privateRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
 			permissions.POST("", gin_permission.CreatePermission(appCtx))
 			permissions.PUT("/:id", gin_permission.UpdatePermission(appCtx))
 			permissions.DELETE("/:id", gin_permission.DeletePermission(appCtx))
+		}
+
+		rolePermissions := e.Group("/role_permissions")
+		{
+			rolePermissions.POST("", gin_role_permission.CreateBatchRolePermission(appCtx))
 		}
 	}
 }

@@ -30,6 +30,18 @@ definitions:
       name:
         type: string
     type: object
+  dto.CreateRolePermissionRequest:
+    properties:
+      permissions:
+        items:
+          properties:
+            id:
+              type: integer
+          type: object
+        type: array
+      role_id:
+        type: integer
+    type: object
   dto.CreateRoleRequest:
     properties:
       description:
@@ -192,6 +204,36 @@ paths:
       summary: Update Permission
       tags:
       - Permissions
+  /api/v1/role_permissions:
+    post:
+      consumes:
+      - application/json
+      description: Create Batch Role Permission
+      parameters:
+      - description: Create Permission
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRolePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Batch Role Permission
+      tags:
+      - Role Permissions
   /api/v1/roles:
     get:
       consumes:
