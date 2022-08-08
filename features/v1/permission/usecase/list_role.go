@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"github.com/cesc1802/auth-service/common"
-	"github.com/cesc1802/auth-service/features/v1/Permission/domain"
-	"github.com/cesc1802/auth-service/features/v1/Permission/dto"
+	"github.com/cesc1802/auth-service/features/v1/permission/domain"
+	"github.com/cesc1802/auth-service/features/v1/permission/dto"
 	"github.com/cesc1802/auth-service/pkg/database"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
 	"github.com/cesc1802/auth-service/pkg/paging"

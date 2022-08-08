@@ -3,8 +3,8 @@ package gin_permission
 import (
 	"github.com/cesc1802/auth-service/app_context"
 	"github.com/cesc1802/auth-service/common"
-	"github.com/cesc1802/auth-service/features/v1/Permission/storage"
-	"github.com/cesc1802/auth-service/features/v1/Permission/usecase"
+	"github.com/cesc1802/auth-service/features/v1/permission/storage"
+	"github.com/cesc1802/auth-service/features/v1/permission/usecase"
 	"github.com/cesc1802/auth-service/pkg/httpserver/extention"
 	"github.com/gin-gonic/gin"
 	"net/http"

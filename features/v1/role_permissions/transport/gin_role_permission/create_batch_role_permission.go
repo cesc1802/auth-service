@@ -3,7 +3,7 @@ package gin_role_permission
 import (
 	"github.com/cesc1802/auth-service/app_context"
 	"github.com/cesc1802/auth-service/common"
-	storage2 "github.com/cesc1802/auth-service/features/v1/Permission/storage"
+	storage2 "github.com/cesc1802/auth-service/features/v1/permission/storage"
 	"github.com/cesc1802/auth-service/features/v1/role_permissions/dto"
 	"github.com/cesc1802/auth-service/features/v1/role_permissions/storage"
 	"github.com/cesc1802/auth-service/features/v1/role_permissions/usecase"
