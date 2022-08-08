@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/cesc1802/auth-service/common"
 	"github.com/cesc1802/auth-service/features/v1/permission/domain"
 	"github.com/cesc1802/auth-service/pkg/database/generic"

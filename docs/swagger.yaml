@@ -98,7 +98,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -127,7 +127,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -156,7 +156,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -190,7 +190,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -261,7 +261,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -290,7 +290,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -319,7 +319,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -353,7 +353,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -367,6 +367,35 @@ paths:
       summary: Update Role
       tags:
       - Roles
+  /api/v1/user_roles/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Roles By User ID
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Roles By User ID
+      tags:
+      - UserRoles
 securityDefinitions:
   ApiKeyAuth:
     in: header
