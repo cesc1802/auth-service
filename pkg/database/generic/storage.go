@@ -141,6 +141,28 @@ func (store *CRUDStore[TModel]) Create(ctx context.Context, model *TModel, queri
 	return nil
 }
 
+func (store *CRUDStore[TModel]) BatchCreate(ctx context.Context, models []TModel, queries ...QueryFunc) error {
+	tx := store.db.Begin()
+
+	if len(queries) > 0 {
+		for _, handler := range queries {
+			tx = handler(tx)
+		}
+	}
+
+	if err := tx.Model(models[0]).CreateInBatches(models, 20).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(models).Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
+}
+
 func NewCRUDStore[TModel ifaces.Modeler](db *gorm.DB) *CRUDStore[TModel] {
 	return &CRUDStore[TModel]{db: db}
 }
