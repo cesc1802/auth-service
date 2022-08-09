@@ -14,7 +14,7 @@ import (
 // GetRolesByUserID
 // @Summary 	Get Roles By User ID
 // @Description Get Roles By User ID
-// @Tags 		UserRoles
+// @Tags 		User Roles
 // @Accept  	json
 // @Produce  	json
 // @Security 	ApiKeyAuth
