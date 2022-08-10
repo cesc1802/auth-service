@@ -1,6 +1,8 @@
 package gin_permission
 
 import (
+	"net/http"
+
 	"github.com/cesc1802/auth-service/app_context"
 	"github.com/cesc1802/auth-service/common"
 	"github.com/cesc1802/auth-service/features/v1/permission/dto"
@@ -8,7 +10,6 @@ import (
 	"github.com/cesc1802/auth-service/features/v1/permission/usecase"
 	"github.com/cesc1802/auth-service/pkg/paging"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // ListPermission

@@ -23,6 +23,18 @@ definitions:
       tag:
         type: string
     type: object
+  dto.AssignRolesToUserRequest:
+    properties:
+      roles:
+        items:
+          properties:
+            id:
+              type: integer
+          type: object
+        type: array
+      user_id:
+        type: integer
+    type: object
   dto.CreatePermissionRequest:
     properties:
       description:
@@ -98,7 +110,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -127,7 +139,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -156,7 +168,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -190,7 +202,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -220,7 +232,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -261,7 +273,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -290,7 +302,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -319,7 +331,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -353,7 +365,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -367,6 +379,65 @@ paths:
       summary: Update Role
       tags:
       - Roles
+  /api/v1/user_roles:
+    post:
+      consumes:
+      - application/json
+      description: Assign Roles To User
+      parameters:
+      - description: Assign Roles to User
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AssignRolesToUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Assign Roles To User
+      tags:
+      - User Roles
+  /api/v1/user_roles/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Roles By User ID
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Roles By User ID
+      tags:
+      - User Roles
 securityDefinitions:
   ApiKeyAuth:
     in: header

@@ -1,15 +1,17 @@
 package v1
 
 import (
+	"net/http"
+
 	"github.com/cesc1802/auth-service/app_context"
 	"github.com/cesc1802/auth-service/docs"
 	"github.com/cesc1802/auth-service/features/v1/permission/transport/gin_permission"
 	"github.com/cesc1802/auth-service/features/v1/role/transport/gin_role"
 	"github.com/cesc1802/auth-service/features/v1/role_permissions/transport/gin_role_permission"
+	"github.com/cesc1802/auth-service/features/v1/user_role/transport/gin_user_role"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"net/http"
 )
 
 func publicRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
@@ -32,6 +34,11 @@ func privateRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
 			roles.POST("", gin_role.CreateRole(appCtx))
 			roles.PUT("/:id", gin_role.UpdateRole(appCtx))
 			roles.DELETE("/:id", gin_role.DeleteRole(appCtx))
+		}
+		userroles := e.Group("/user_roles")
+		{
+			userroles.GET("/:user_id", gin_user_role.GetRolesByUserID(appCtx))
+			userroles.POST("", gin_user_role.AssignRolesToUser(appCtx))
 		}
 		permissions := e.Group("/permissions")
 		{
