@@ -39,6 +39,7 @@ func privateRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
 		{
 			userroles.GET("/:user_id", gin_user_role.GetRolesByUserID(appCtx))
 			userroles.POST("", gin_user_role.AssignRolesToUser(appCtx))
+			userroles.DELETE("", gin_user_role.RemoveRolesFromUser(appCtx))
 		}
 		permissions := e.Group("/permissions")
 		{

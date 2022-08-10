@@ -12,6 +12,8 @@ const (
 var (
 	ErrNumOfRoleNotEnough = common.NewCustomError(nil, "number of role id not enough",
 		"ERR_NUM_OF_ROLE_ID_NOT_ENOUGH")
+
+	ErrRolesInvalid = common.NewCustomError(nil, "roles are invalid", "ERR_ROLES_INVALID")
 )
 
 type UserRole struct {
