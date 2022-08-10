@@ -61,6 +61,18 @@ definitions:
       name:
         type: string
     type: object
+  dto.RemoveRolesRequest:
+    properties:
+      roles:
+        items:
+          properties:
+            id:
+              type: integer
+          type: object
+        type: array
+      user_id:
+        type: integer
+    type: object
   dto.UpdatePermissionRequest:
     properties:
       description:
@@ -380,6 +392,35 @@ paths:
       tags:
       - Roles
   /api/v1/user_roles:
+    delete:
+      consumes:
+      - application/json
+      description: Remove Roles From User
+      parameters:
+      - description: Remove Roles From User
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RemoveRolesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Remove Roles From User
+      tags:
+      - User Roles
     post:
       consumes:
       - application/json

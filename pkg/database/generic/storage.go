@@ -2,6 +2,7 @@ package generic
 
 import (
 	"context"
+
 	"github.com/cesc1802/auth-service/common"
 	"github.com/cesc1802/auth-service/pkg/ifaces"
 	"gorm.io/gorm"
@@ -175,6 +176,29 @@ func (store *CRUDStore[TModel]) BatchCreate(ctx context.Context, models []TModel
 	}
 
 	if err := tx.Model(models).Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
+}
+
+func (store *CRUDStore[TModel]) DeleteByCondition(ctx context.Context, queries ...QueryFunc) error {
+	tx := store.db.Begin()
+	var model TModel
+
+	if len(queries) > 0 {
+		for _, handler := range queries {
+			tx = handler(tx)
+		}
+	}
+
+	if err := tx.Model(model).Delete(&model).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		tx.Rollback()
 		return err
 	}
