@@ -34,8 +34,8 @@ type CountStore[T any] interface {
 	Count(ctx context.Context, queries ...QueryFunc) (*int64, error)
 }
 
-type BatchDeleteStore[T any] interface {
-	DeleteByCondition(ctx context.Context, models []T, queries ...QueryFunc) error
+type DeleteByConditionStore[T any] interface {
+	DeleteByCondition(ctx context.Context, queries ...QueryFunc) error
 }
 
 //type ICRUDStore[T any] interface {

@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/cesc1802/auth-service/common"
-	"github.com/cesc1802/auth-service/entities"
 	"github.com/cesc1802/auth-service/features/v1/user_role/domain"
 	"github.com/cesc1802/auth-service/features/v1/user_role/dto"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
@@ -13,7 +12,7 @@ import (
 )
 
 type DeleteRoleStore interface {
-	generic.BatchDeleteStore[domain.UserRole]
+	generic.DeleteByConditionStore[domain.UserRole]
 	generic.CountStore[domain.UserRole]
 }
 
@@ -49,16 +48,7 @@ func (uc *ucDeleteRole) DeleteRole(ctx context.Context, form *dto.RemoveRolesReq
 		return domain.ErrRolesInvalid
 	}
 
-	userRoles := make([]domain.UserRole, len(form.Roles))
-	for i, role := range form.Roles {
-		userRoles[i] = domain.UserRole{
-			UserRole: entities.UserRole{
-				UserID: form.UserID,
-				RoleID: role.ID,
-			},
-		}
-	}
-	if err := uc.store.DeleteByCondition(ctx, userRoles, filter); err != nil {
+	if err := uc.store.DeleteByCondition(ctx, filter); err != nil {
 		return common.ErrCannotDeleteEntity(domain.EntityName, err)
 	}
 

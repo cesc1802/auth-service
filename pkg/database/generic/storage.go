@@ -183,7 +183,7 @@ func (store *CRUDStore[TModel]) BatchCreate(ctx context.Context, models []TModel
 	return nil
 }
 
-func (store *CRUDStore[TModel]) DeleteByCondition(ctx context.Context, models []TModel, queries ...QueryFunc) error {
+func (store *CRUDStore[TModel]) DeleteByCondition(ctx context.Context, queries ...QueryFunc) error {
 	tx := store.db.Begin()
 	var model TModel
 
@@ -193,7 +193,7 @@ func (store *CRUDStore[TModel]) DeleteByCondition(ctx context.Context, models []
 		}
 	}
 
-	if err := tx.Model(models[0]).Delete(&model).Error; err != nil {
+	if err := tx.Model(model).Delete(&model).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
