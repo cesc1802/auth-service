@@ -193,7 +193,7 @@ func (store *CRUDStore[TModel]) DeleteByCondition(ctx context.Context, queries .
 		}
 	}
 
-	if err := tx.Model(model).Delete(&model).Error; err != nil {
+	if err := tx.Model(model).Unscoped().Delete(&model).Error; err != nil {
 		tx.Rollback()
 		return err
 	}

@@ -11,7 +11,12 @@ services:
       - MYSQL_PASSWORD=admin@1802
       - MYSQL_USER=admin
       - MYSQL_AUTHENTICATION_PLUGIN=mysql_native_password
-
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=admin@1802
 volumes:
   data:
     driver: local
