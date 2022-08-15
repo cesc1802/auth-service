@@ -1,8 +1,12 @@
 package http
 
 import (
+	"time"
+
 	"github.com/cesc1802/auth-service/app_context"
 	v1 "github.com/cesc1802/auth-service/cmd/http/v1"
+	"github.com/cesc1802/auth-service/pkg/cache"
+	"github.com/cesc1802/auth-service/pkg/cache/redis"
 	"github.com/cesc1802/auth-service/pkg/database"
 	"github.com/cesc1802/auth-service/pkg/httpserver"
 	"github.com/cesc1802/auth-service/pkg/i18n"
@@ -33,6 +37,11 @@ const (
 	ServPort             = "server-port"
 	ServMode             = "server-mode"
 	ServSupportLanguages = "server-support-languages"
+
+	RedisHost     = "redis-host"
+	RedisPort     = "redis-port"
+	RedisPassword = "redis-password"
+	RedisDB       = "redis-db"
 )
 
 func registerFlags(cmd *cobra.Command) {
@@ -60,6 +69,11 @@ func registerFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().Uint(DbMaxOpenConn, 20, "")
 	cmd.PersistentFlags().Uint(DbMaxIdleConn, 20, "")
 
+	cmd.PersistentFlags().String(RedisHost, "localhost", "redis host used to connect")
+	cmd.PersistentFlags().String(RedisPort, "6379", "redis port used to connect")
+	cmd.PersistentFlags().String(RedisPassword, "admin@1802", "redis password used to connect")
+	cmd.PersistentFlags().Int(RedisDB, 0, "redis db used to connect")
+
 	cmd.PersistentFlags().StringSlice(ServSupportLanguages, []string{"en", "vi"},
 		"server language support when response")
 
@@ -80,6 +94,11 @@ func registerFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag(DbMaxOpenConn, cmd.PersistentFlags().Lookup(DbMaxOpenConn))
 	_ = viper.BindPFlag(DbMaxIdleConn, cmd.PersistentFlags().Lookup(DbMaxIdleConn))
 
+	_ = viper.BindPFlag(RedisHost, cmd.PersistentFlags().Lookup(RedisHost))
+	_ = viper.BindPFlag(RedisPort, cmd.PersistentFlags().Lookup(RedisPort))
+	_ = viper.BindPFlag(RedisPassword, cmd.PersistentFlags().Lookup(RedisPassword))
+	_ = viper.BindPFlag(RedisDB, cmd.PersistentFlags().Lookup(RedisDB))
+
 	_ = viper.BindPFlag(ServSupportLanguages, cmd.PersistentFlags().Lookup(ServSupportLanguages))
 }
 
@@ -95,6 +114,14 @@ func NewServerCommand() *cobra.Command {
 				logger.WithConsole(true),
 			)
 			defer l.Sync()
+
+			redisClient := cache.NewRedisClient(
+				viper.GetString(RedisHost),
+				viper.GetString(RedisPort),
+				viper.GetString(RedisPassword),
+				viper.GetInt(RedisDB),
+			)
+			redisCache := redis.NewRedisCache(time.Hour*24, redisClient)
 
 			httpConfig := httpserver.NewMyHttpServerConfig(viper.GetString(ServMode),
 				viper.GetString(ServPort))
@@ -112,6 +139,7 @@ func NewServerCommand() *cobra.Command {
 			appContext := app_context.NewAppContext(appGorm.GetDB(),
 				jwt.NewTokenJWTProvider(viper.GetString(AccessTokenExpiry), viper.GetUint(AccessTokenExpiry)),
 				jwt.NewTokenJWTProvider(viper.GetString(RefreshTokenSecretKey), viper.GetUint(RefreshTokenExpiry)),
+				redisCache,
 			)
 
 			router.AddHandler(v1.SetupRoute(appContext))

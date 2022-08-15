@@ -1,6 +1,7 @@
 package gin_user_role
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/cesc1802/auth-service/app_context"
@@ -28,6 +29,7 @@ func AssignRolesToUser(appCtx app_context.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var form dto.AssignRolesToUserRequest
 		db := appCtx.GetAppGorm()
+		cache := appCtx.GetAppCache()
 
 		if err := c.ShouldBind(&form); err != nil {
 			panic(err)
@@ -41,6 +43,8 @@ func AssignRolesToUser(appCtx app_context.AppContext) gin.HandlerFunc {
 			panic(err)
 		}
 
+		userRoleCacheKey := fmt.Sprintf(common.UserRoleCacheKey, form.UserID)
+		cache.Delete(userRoleCacheKey)
 		c.JSON(http.StatusOK, common.SimpleSuccessResponse(true))
 	}
 }
