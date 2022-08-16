@@ -11,7 +11,7 @@ type IFindOneByConditionStore[T any] interface {
 }
 
 type ICreateStore[T any] interface {
-	Create(ctx context.Context, model *T, queries ...QueryFunc) error
+	Create(ctx context.Context, model *T) error
 }
 
 type BatchCreateStore[T any] interface {

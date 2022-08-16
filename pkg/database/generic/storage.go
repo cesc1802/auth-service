@@ -139,14 +139,8 @@ func (store *CRUDStore[TModel]) FindOneByCondition(ctx context.Context, queries 
 	return &result, nil
 }
 
-func (store *CRUDStore[TModel]) Create(ctx context.Context, model *TModel, queries ...QueryFunc) error {
+func (store *CRUDStore[TModel]) Create(ctx context.Context, model *TModel) error {
 	tx := store.db.Begin()
-
-	if len(queries) > 0 {
-		for _, handler := range queries {
-			tx = handler(tx)
-		}
-	}
 
 	if err := tx.Model(model).Create(model).Error; err != nil {
 		tx.Rollback()
