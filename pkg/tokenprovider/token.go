@@ -31,5 +31,5 @@ type Token struct {
 type TokenPayload struct {
 	UserId         uint   `json:"user_id"`
 	RefreshTokenId string `json:"refresh_token_id,omitempty"`
-	Role           string `json:"role"`
+	Roles          []uint `json:"roles"`
 }

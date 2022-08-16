@@ -19,3 +19,7 @@ func Condition[T any](column string, value *T) func(db *gorm.DB) *gorm.DB {
 		return db
 	}
 }
+
+func ActiveRecord(db *gorm.DB) *gorm.DB {
+	return db.Where("status = ? and deleted_at != ?", 1, nil)
+}

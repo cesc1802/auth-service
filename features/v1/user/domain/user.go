@@ -12,11 +12,25 @@ const (
 )
 
 var (
-	ErrUserExisting = common.NewCustomError(nil, "user existing", "ERR_USER_EXISTING")
+	ErrUserExisting      = common.NewCustomError(nil, "user existing", "ERR_USER_EXISTING")
+	ErrUserBlocked       = common.NewCustomError(nil, "user has been block", "ERR_USER_BLOCKED")
+	ErrInvalidCredential = common.NewCustomError(nil, "invalid credentials", "ERR_INVALID_CREDENTIAL")
 )
 
 type User struct {
 	entities.User
+}
+
+func (u User) IsActive() bool {
+	return u.Status == 1
+}
+
+func (u User) IsBlocked() bool {
+	return u.Status == 0
+}
+
+func (u User) InvalidPassword(hashPassword string) bool {
+	return u.Password != hashPassword
 }
 
 func FromUserDto(u *dto.CreateUserRequest) User {

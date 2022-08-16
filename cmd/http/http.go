@@ -7,6 +7,7 @@ import (
 	"github.com/cesc1802/auth-service/pkg/httpserver"
 	"github.com/cesc1802/auth-service/pkg/i18n"
 	"github.com/cesc1802/auth-service/pkg/logger"
+	"github.com/cesc1802/auth-service/pkg/tokenprovider/jwt"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -108,7 +109,10 @@ func NewServerCommand() *cobra.Command {
 			router := httpserver.New(httpConfig, appI18n)
 			appGorm := database.NewAppGorm(gormConfig)
 
-			appContext := app_context.NewAppContext(appGorm.GetDB())
+			appContext := app_context.NewAppContext(appGorm.GetDB(),
+				jwt.NewTokenJWTProvider(viper.GetString(AccessTokenExpiry), viper.GetUint(AccessTokenExpiry)),
+				jwt.NewTokenJWTProvider(viper.GetString(RefreshTokenSecretKey), viper.GetUint(RefreshTokenExpiry)),
+			)
 
 			router.AddHandler(v1.SetupRoute(appContext))
 			router.Start()

@@ -72,6 +72,13 @@ definitions:
       password:
         type: string
     type: object
+  dto.LoginUserRequest:
+    properties:
+      loginID:
+        type: string
+      password:
+        type: string
+    type: object
   dto.RemoveRolesRequest:
     properties:
       roles:
@@ -106,6 +113,36 @@ info:
   title: Auth Service API
   version: "1.0"
 paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: Create User
+        in: body
+        name: Permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/common.AppError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/common.AppError'
+      security:
+      - ApiKeyAuth: []
+      summary: Login
+      tags:
+      - Auth
   /api/v1/auth/register:
     post:
       consumes:

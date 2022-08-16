@@ -27,6 +27,7 @@ func publicRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
 		auth := e.Group("/auth")
 		{
 			auth.POST("/register", gin_auth.Register(appCtx))
+			auth.POST("/login", gin_auth.Login(appCtx))
 		}
 	}
 }
