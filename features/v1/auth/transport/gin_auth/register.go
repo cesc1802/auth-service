@@ -1,4 +1,4 @@
-package transport
+package gin_auth
 
 import (
 	"github.com/cesc1802/auth-service/app_context"

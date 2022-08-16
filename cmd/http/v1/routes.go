@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/cesc1802/auth-service/features/v1/auth/transport/gin_auth"
 	"net/http"
 
 	"github.com/cesc1802/auth-service/app_context"
@@ -22,6 +23,11 @@ func publicRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
 			})
 			return
 		})
+
+		auth := e.Group("/auth")
+		{
+			auth.POST("/register", gin_auth.Register(appCtx))
+		}
 	}
 }
 
