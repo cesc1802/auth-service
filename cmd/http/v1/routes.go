@@ -1,18 +1,20 @@
 package v1
 
 import (
-	"github.com/cesc1802/auth-service/features/v1/auth/transport/gin_auth"
-	"net/http"
-
+	"context"
+	"fmt"
 	"github.com/cesc1802/auth-service/app_context"
 	"github.com/cesc1802/auth-service/docs"
+	"github.com/cesc1802/auth-service/features/v1/auth/transport/gin_auth"
 	"github.com/cesc1802/auth-service/features/v1/permission/transport/gin_permission"
 	"github.com/cesc1802/auth-service/features/v1/role/transport/gin_role"
 	"github.com/cesc1802/auth-service/features/v1/role_permissions/transport/gin_role_permission"
 	"github.com/cesc1802/auth-service/features/v1/user_role/transport/gin_user_role"
+	"github.com/cesc1802/auth-service/pkg/utils/random"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"net/http"
 )
 
 func publicRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
@@ -72,6 +74,13 @@ func swaggerRoute(appCtx app_context.AppContext) func(e *gin.RouterGroup) {
 
 func SetupRoute(appCtx app_context.AppContext) func(e *gin.Engine) {
 	return func(e *gin.Engine) {
+		e.Use(GinLoggerWithConfig(appCtx, GinLoggerConfig{Formatter: func(c context.Context, m GinLogDetails) string {
+			return fmt.Sprintf("%s use %s request %s at %v, handler %s use %f seconds to respond it with %d %s",
+				m.ClientIP, m.Method, m.RequestURI, m.ReqTime, m.HandlerName, m.Latency, m.StatusCode, m.t)
+		},
+			SkipPaths:     []string{},
+			EnableDetails: true,
+			TraceIDFunc:   func(context.Context) string { return random.String(10, random.Ascii) }}))
 		v1 := e.Group("/api/v1")
 
 		publicRoute(appCtx)(v1)
