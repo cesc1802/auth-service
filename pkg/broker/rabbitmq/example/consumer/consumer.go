@@ -3,11 +3,19 @@ package main
 import (
 	"fmt"
 	"github.com/cesc1802/auth-service/pkg/broker/rabbitmq"
+	"github.com/cesc1802/auth-service/pkg/logger"
 
 	"github.com/streadway/amqp"
 )
 
 func main() {
+	var l = logger.Init(
+		logger.WithLogDir("logs/"),
+		logger.WithDebug(true),
+		logger.WithConsole(true),
+	)
+	defer l.Sync()
+
 	rmq := rabbitmq.New(
 		&rabbitmq.Config{
 			Host:     "localhost",

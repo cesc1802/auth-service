@@ -3,11 +3,20 @@ package main
 import (
 	"fmt"
 	"github.com/cesc1802/auth-service/pkg/broker/rabbitmq"
+	"github.com/cesc1802/auth-service/pkg/logger"
+	"strconv"
 
 	"github.com/streadway/amqp"
 )
 
 func main() {
+	var l = logger.Init(
+		logger.WithLogDir("logs/"),
+		logger.WithDebug(true),
+		logger.WithConsole(true),
+	)
+	defer l.Sync()
+
 	rmq := rabbitmq.New(
 		&rabbitmq.Config{
 			Host:     "localhost",
@@ -35,17 +44,19 @@ func main() {
 	defer publisher.Shutdown()
 	publisher.RegisterSignalHandler()
 
-	// may be we should autoconvert to byte array?
-	msg := amqp.Publishing{
-		Body: []byte("2"),
-	}
+	//// may be we should autoconvert to byte array?
+	//msg := amqp.Publishing{
+	//	Body: []byte("2"),
+	//}
 
 	publisher.NotifyReturn(func(message amqp.Return) {
 		fmt.Println(message)
 	})
 
 	for i := 0; i < 10; i++ {
-		err = publisher.Publish(msg)
+		err = publisher.Publish(amqp.Publishing{
+			Body: []byte(strconv.Itoa(i)),
+		})
 		if err != nil {
 			fmt.Println(err, i)
 		}
