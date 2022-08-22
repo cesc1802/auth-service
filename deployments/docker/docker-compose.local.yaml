@@ -12,6 +12,19 @@ services:
       - MYSQL_USER=admin
       - MYSQL_AUTHENTICATION_PLUGIN=mysql_native_password
 
+  rabbitmq:
+    platform: linux/amd64
+    container_name: auth_service_broker
+    image: bitnami/rabbitmq:3.9.22
+    environment:
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    ports:
+      - "15675:15675"
+      - "15672:15672"
+      - "5672:5672"
+      - "1883:1883"
+
 volumes:
   data:
     driver: local
