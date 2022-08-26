@@ -43,8 +43,9 @@ func Login(appCtx app_context.AppContext) gin.HandlerFunc {
 		atProvider := appCtx.GetATProvider()
 		rtProvider := appCtx.GetRTProvider()
 		cache := appCtx.GetAppCache()
+		publisher := appCtx.GetPublisher()
 
-		uc := usecase.NewUseCaseLogin(store, userRoleStore, rolePermissionStore, hasher, atProvider, rtProvider, cache)
+		uc := usecase.NewUseCaseLogin(store, userRoleStore, rolePermissionStore, hasher, atProvider, rtProvider, cache, publisher)
 
 		data, err := uc.Login(c.Request.Context(), &form)
 		if err != nil {

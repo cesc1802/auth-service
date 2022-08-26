@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/cesc1802/auth-service/cmd"
 	"log"
+
+	"github.com/cesc1802/auth-service/cmd"
 )
 
 // @title Auth Service API

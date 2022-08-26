@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/cesc1802/auth-service/cmd/http"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"os"
 	"strings"
+
+	"github.com/cesc1802/auth-service/cmd/http"
+	"github.com/cesc1802/auth-service/cmd/worker"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var RootCmd = &cobra.Command{
@@ -41,6 +43,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&configFile, "config", "", "This argument is used to point to path config file")
 
 	http.RegisterCmdRecursive(RootCmd)
+	worker.RegisterWorkerCmdRecursive(RootCmd)
 
 }
 
