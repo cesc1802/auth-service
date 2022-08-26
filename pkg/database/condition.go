@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -21,5 +22,5 @@ func Condition[T any](column string, value *T) func(db *gorm.DB) *gorm.DB {
 }
 
 func ActiveRecord(db *gorm.DB) *gorm.DB {
-	return db.Where("status = ? and deleted_at != ?", 1, nil)
+	return db.Where("status = ?", 1)
 }

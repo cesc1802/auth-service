@@ -3,10 +3,13 @@ package usecase
 import (
 	"context"
 	"fmt"
+
 	"github.com/cesc1802/auth-service/common"
 	"github.com/cesc1802/auth-service/features/v1/auth/dto"
+	rolePermissionDomain "github.com/cesc1802/auth-service/features/v1/role_permissions/domain"
 	"github.com/cesc1802/auth-service/features/v1/user/domain"
 	userRoleDomain "github.com/cesc1802/auth-service/features/v1/user_role/domain"
+	"github.com/cesc1802/auth-service/pkg/cache"
 	"github.com/cesc1802/auth-service/pkg/database"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
 	"github.com/cesc1802/auth-service/pkg/hash"
@@ -22,23 +25,36 @@ type FindUserRoleStore interface {
 	generic.IFindAllStore[userRoleDomain.UserRole]
 }
 
-type ucLoginUser struct {
-	store              FindUserStore
-	userRoleStore      FindUserRoleStore
-	hasher             hash.Hasher
-	tokProvider        tokenprovider.Provider
-	refreshTokProvider tokenprovider.Provider
+type FindRolePermissionStore interface {
+	generic.IFindAllStore[rolePermissionDomain.RolePermission]
 }
 
-func NewUseCaseLogin(store FindUserStore, userRoleStore FindUserRoleStore,
+type ucLoginUser struct {
+	store               FindUserStore
+	userRoleStore       FindUserRoleStore
+	rolePermissionStore FindRolePermissionStore
+	hasher              hash.Hasher
+	tokProvider         tokenprovider.Provider
+	refreshTokProvider  tokenprovider.Provider
+	cache               cache.ICache
+}
+
+func NewUseCaseLogin(store FindUserStore,
+	userRoleStore FindUserRoleStore,
+	rolePermissionStore FindRolePermissionStore,
 	hasher hash.Hasher,
-	tokProvider tokenprovider.Provider, refreshTokProvider tokenprovider.Provider) *ucLoginUser {
+	tokProvider tokenprovider.Provider,
+	refreshTokProvider tokenprovider.Provider,
+	cache cache.ICache,
+) *ucLoginUser {
 	return &ucLoginUser{
-		store:              store,
-		userRoleStore:      userRoleStore,
-		hasher:             hasher,
-		tokProvider:        tokProvider,
-		refreshTokProvider: refreshTokProvider,
+		store:               store,
+		userRoleStore:       userRoleStore,
+		rolePermissionStore: rolePermissionStore,
+		hasher:              hasher,
+		tokProvider:         tokProvider,
+		refreshTokProvider:  refreshTokProvider,
+		cache:               cache,
 	}
 }
 
@@ -73,6 +89,15 @@ func (uc *ucLoginUser) Login(ctx context.Context, form *dto.LoginUserRequest) (*
 	for idx, role := range roles {
 		roleIds[idx] = role.RoleID
 	}
+
+	rolePermissions, _, err := uc.rolePermissionStore.FindAll(ctx, func(db *gorm.DB) *gorm.DB {
+		return db.Where("role_id IN (?)", roleIds)
+	})
+	var permissions []uint
+	for _, rolePermission := range rolePermissions {
+		permissions = append(permissions, rolePermission.PermissionID)
+	}
+	uc.cache.Set(fmt.Sprintf(common.UserPermissionCacheKey, user.ID), permissions, common.DefaultCacheExpiration)
 
 	accessTok, err := uc.tokProvider.Generate(tokenprovider.TokenPayload{
 		UserId: user.ID,

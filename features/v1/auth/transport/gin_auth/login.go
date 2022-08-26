@@ -1,15 +1,17 @@
 package gin_auth
 
 import (
+	"net/http"
+
 	"github.com/cesc1802/auth-service/app_context"
 	"github.com/cesc1802/auth-service/common"
 	"github.com/cesc1802/auth-service/features/v1/auth/dto"
 	"github.com/cesc1802/auth-service/features/v1/auth/usecase"
+	storage3 "github.com/cesc1802/auth-service/features/v1/role_permissions/storage"
 	"github.com/cesc1802/auth-service/features/v1/user/storage"
 	storage2 "github.com/cesc1802/auth-service/features/v1/user_role/storage"
 	"github.com/cesc1802/auth-service/pkg/hash/md5"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // Login
@@ -36,11 +38,13 @@ func Login(appCtx app_context.AppContext) gin.HandlerFunc {
 
 		store := storage.NewMySqlUserStore(db)
 		userRoleStore := storage2.NewMySqlUserRoleStore(db)
+		rolePermissionStore := storage3.NewMySqlRolePermissionStore(db)
 		hasher := md5.NewMD5Hash()
 		atProvider := appCtx.GetATProvider()
 		rtProvider := appCtx.GetRTProvider()
+		cache := appCtx.GetAppCache()
 
-		uc := usecase.NewUseCaseLogin(store, userRoleStore, hasher, atProvider, rtProvider)
+		uc := usecase.NewUseCaseLogin(store, userRoleStore, rolePermissionStore, hasher, atProvider, rtProvider, cache)
 
 		data, err := uc.Login(c.Request.Context(), &form)
 		if err != nil {

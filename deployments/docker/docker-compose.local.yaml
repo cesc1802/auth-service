@@ -24,6 +24,13 @@ services:
       - "5672:5672"
       - "1883:1883"
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=admin@1802
+
 volumes:
   data:
     driver: local

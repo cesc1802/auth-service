@@ -2,11 +2,12 @@ package common
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/cesc1802/auth-service/pkg/i18n"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"net/http"
-	"strings"
 )
 
 type AppError struct {
@@ -26,6 +27,8 @@ type ValidationErrorField struct {
 
 var ErrRecordNotFound = NewCustomError(nil, "record not found", "ERR_RECORD_NOT_FOUND")
 var ErrCopyData = NewCustomError(nil, "copy data failed", "ERR_COPY_DATA_FAILED")
+var ErrNoCacheKeyFound = NewCustomError(nil, "cache key not found", "ERR_NO_CACHE_KEY_FOUND")
+var ErrCacheKeyExpired = NewCustomError(nil, "cache key expired", "ERR_CACHE_KEY_EXPIRED")
 
 func ValidationError(msg string, key string, ve []ValidationErrorField) *AppError {
 	appErr := NewErrorResponse(nil, msg, msg, key)
