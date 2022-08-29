@@ -5,6 +5,8 @@ import (
 
 	"github.com/cesc1802/auth-service/app_context"
 	v1 "github.com/cesc1802/auth-service/cmd/http/v1"
+	"github.com/cesc1802/auth-service/common"
+	"github.com/cesc1802/auth-service/pkg/broker/rabbitmq"
 	"github.com/cesc1802/auth-service/pkg/cache"
 	"github.com/cesc1802/auth-service/pkg/cache/redis"
 	"github.com/cesc1802/auth-service/pkg/database"
@@ -74,6 +76,19 @@ func registerFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String(RedisPassword, "admin@1802", "redis password used to connect")
 	cmd.PersistentFlags().Int(RedisDB, 0, "redis db used to connect")
 
+	cmd.PersistentFlags().String(common.MQHost, "localhost", "rabbitmq host used to connect")
+	cmd.PersistentFlags().Int(common.MQPort, 5672, "rabbitmq port used to connect")
+	cmd.PersistentFlags().String(common.MQPassword, "guest", "rabbitmq password used to connect")
+	cmd.PersistentFlags().String(common.MQUsername, "guest", "rabbitmq db used to connect")
+	cmd.PersistentFlags().String(common.MQVhost, "/", "rabbitmq virtual host used to connect")
+	cmd.PersistentFlags().String(common.MQExchangeName, "cache_exchange", "rabbitmq exchange name")
+	cmd.PersistentFlags().String(common.MQExchangeType, "fanout", "rabbitmq exchange type")
+	cmd.PersistentFlags().String(common.MQQueueName, "cache_queue", "rabbitmq queue name")
+	cmd.PersistentFlags().String(common.MQBindingRoutingKey, "hehe", "rabbitmq binding routing key")
+	cmd.PersistentFlags().String(common.MQConsumerOptionsTag, "cache_consumer", "rabbitmq consumer options tag")
+	cmd.PersistentFlags().String(common.MQPublishingOptionsTag, "ProducerTagHede", "rabbitmq publishing options tag")
+	cmd.PersistentFlags().String(common.MQPublishingOptionsRoutingKey, "naber", "rabbitmq publishing options routing key")
+
 	cmd.PersistentFlags().StringSlice(ServSupportLanguages, []string{"en", "vi"},
 		"server language support when response")
 
@@ -98,6 +113,19 @@ func registerFlags(cmd *cobra.Command) {
 	_ = viper.BindPFlag(RedisPort, cmd.PersistentFlags().Lookup(RedisPort))
 	_ = viper.BindPFlag(RedisPassword, cmd.PersistentFlags().Lookup(RedisPassword))
 	_ = viper.BindPFlag(RedisDB, cmd.PersistentFlags().Lookup(RedisDB))
+
+	_ = viper.BindPFlag(common.MQHost, cmd.PersistentFlags().Lookup(common.MQHost))
+	_ = viper.BindPFlag(common.MQPort, cmd.PersistentFlags().Lookup(common.MQPort))
+	_ = viper.BindPFlag(common.MQUsername, cmd.PersistentFlags().Lookup(common.MQUsername))
+	_ = viper.BindPFlag(common.MQPassword, cmd.PersistentFlags().Lookup(common.MQPassword))
+	_ = viper.BindPFlag(common.MQVhost, cmd.PersistentFlags().Lookup(common.MQVhost))
+	_ = viper.BindPFlag(common.MQExchangeName, cmd.PersistentFlags().Lookup(common.MQExchangeName))
+	_ = viper.BindPFlag(common.MQExchangeType, cmd.PersistentFlags().Lookup(common.MQExchangeType))
+	_ = viper.BindPFlag(common.MQQueueName, cmd.PersistentFlags().Lookup(common.MQQueueName))
+	_ = viper.BindPFlag(common.MQBindingRoutingKey, cmd.PersistentFlags().Lookup(common.MQBindingRoutingKey))
+	_ = viper.BindPFlag(common.MQConsumerOptionsTag, cmd.PersistentFlags().Lookup(common.MQConsumerOptionsTag))
+	_ = viper.BindPFlag(common.MQPublishingOptionsTag, cmd.PersistentFlags().Lookup(common.MQPublishingOptionsTag))
+	_ = viper.BindPFlag(common.MQPublishingOptionsRoutingKey, cmd.PersistentFlags().Lookup(common.MQPublishingOptionsRoutingKey))
 
 	_ = viper.BindPFlag(ServSupportLanguages, cmd.PersistentFlags().Lookup(ServSupportLanguages))
 }
@@ -136,10 +164,54 @@ func NewServerCommand() *cobra.Command {
 			router := httpserver.New(httpConfig, appI18n)
 			appGorm := database.NewAppGorm(gormConfig)
 
+			producer := rabbitmq.NewMQPublisher(rabbitmq.MQConfig{
+				Config: rabbitmq.Config{
+					Host:     viper.GetString(common.MQHost),
+					Port:     viper.GetInt(common.MQPort),
+					Username: viper.GetString(common.MQUsername),
+					Password: viper.GetString(common.MQPassword),
+					Vhost:    viper.GetString(common.MQVhost),
+				},
+				Exchange: rabbitmq.Exchange{
+					Name: viper.GetString(common.MQExchangeName),
+				},
+				PublishingOptions: rabbitmq.PublishingOptions{
+					Tag:        viper.GetString(common.MQPublishingOptionsTag),
+					RoutingKey: viper.GetString(common.MQPublishingOptionsRoutingKey),
+				},
+			})
+			consumer := rabbitmq.NewMQConsumer(rabbitmq.MQConfig{
+				Config: rabbitmq.Config{
+					Host:     viper.GetString(common.MQHost),
+					Port:     viper.GetInt(common.MQPort),
+					Username: viper.GetString(common.MQUsername),
+					Password: viper.GetString(common.MQPassword),
+					Vhost:    viper.GetString(common.MQVhost),
+				},
+				Exchange: rabbitmq.Exchange{
+					Name:    viper.GetString(common.MQExchangeName),
+					Type:    viper.GetString(common.MQExchangeType),
+					Durable: true,
+				},
+				Queue: rabbitmq.Queue{
+					Name:    viper.GetString(common.MQQueueName),
+					Durable: true,
+				},
+				BindingOptions: rabbitmq.BindingOptions{
+					RoutingKey: viper.GetString(common.MQBindingRoutingKey),
+				},
+				ConsumerOptions: rabbitmq.ConsumerOptions{
+					Tag:     viper.GetString(common.MQConsumerOptionsTag),
+					AutoAck: true,
+				},
+			})
+
 			appContext := app_context.NewAppContext(appGorm.GetDB(),
-				jwt.NewTokenJWTProvider(viper.GetString(AccessTokenExpiry), viper.GetUint(AccessTokenExpiry)),
-				jwt.NewTokenJWTProvider(viper.GetString(RefreshTokenSecretKey), viper.GetUint(RefreshTokenExpiry)),
+				jwt.NewTokenJWTProvider(viper.GetString(common.AccessTokenExpiry), viper.GetUint(common.AccessTokenExpiry)),
+				jwt.NewTokenJWTProvider(viper.GetString(common.RefreshTokenSecretKey), viper.GetUint(common.RefreshTokenExpiry)),
 				redisCache,
+				producer,
+				consumer,
 			)
 
 			router.AddHandler(v1.SetupRoute(appContext))

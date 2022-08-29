@@ -1,6 +1,7 @@
 package app_context
 
 import (
+	"github.com/cesc1802/auth-service/pkg/broker"
 	"github.com/cesc1802/auth-service/pkg/cache"
 	"github.com/cesc1802/auth-service/pkg/tokenprovider"
 	"gorm.io/gorm"
@@ -11,6 +12,8 @@ type AppContext interface {
 	GetATProvider() tokenprovider.Provider
 	GetRTProvider() tokenprovider.Provider
 	GetAppCache() cache.ICache
+	GetPublisher() broker.Publisher
+	GetSubscriber() broker.Subscriber
 }
 
 type appContext struct {
@@ -18,12 +21,24 @@ type appContext struct {
 	atProvider tokenprovider.Provider
 	rtProvider tokenprovider.Provider
 	cache      cache.ICache
+	publisher  broker.Publisher
+	subscriber broker.Subscriber
 }
 
 func NewAppContext(db *gorm.DB, atProvider,
 	rtProvider tokenprovider.Provider,
-	cache cache.ICache) *appContext {
-	return &appContext{db: db, atProvider: atProvider, rtProvider: rtProvider, cache: cache}
+	cache cache.ICache,
+	publisher broker.Publisher,
+	subscriber broker.Subscriber,
+) *appContext {
+	return &appContext{
+		db:         db,
+		atProvider: atProvider,
+		rtProvider: rtProvider,
+		cache:      cache,
+		publisher:  publisher,
+		subscriber: subscriber,
+	}
 }
 
 func (a *appContext) GetAppGorm() *gorm.DB {
@@ -40,4 +55,11 @@ func (a *appContext) GetRTProvider() tokenprovider.Provider {
 
 func (a *appContext) GetAppCache() cache.ICache {
 	return a.cache
+}
+
+func (a *appContext) GetPublisher() broker.Publisher {
+	return a.publisher
+}
+func (a *appContext) GetSubscriber() broker.Subscriber {
+	return a.subscriber
 }

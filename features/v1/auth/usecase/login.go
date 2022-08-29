@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/cesc1802/auth-service/common"
@@ -9,6 +10,7 @@ import (
 	rolePermissionDomain "github.com/cesc1802/auth-service/features/v1/role_permissions/domain"
 	"github.com/cesc1802/auth-service/features/v1/user/domain"
 	userRoleDomain "github.com/cesc1802/auth-service/features/v1/user_role/domain"
+	"github.com/cesc1802/auth-service/pkg/broker"
 	"github.com/cesc1802/auth-service/pkg/cache"
 	"github.com/cesc1802/auth-service/pkg/database"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
@@ -37,6 +39,7 @@ type ucLoginUser struct {
 	tokProvider         tokenprovider.Provider
 	refreshTokProvider  tokenprovider.Provider
 	cache               cache.ICache
+	publisher           broker.Publisher
 }
 
 func NewUseCaseLogin(store FindUserStore,
@@ -46,6 +49,7 @@ func NewUseCaseLogin(store FindUserStore,
 	tokProvider tokenprovider.Provider,
 	refreshTokProvider tokenprovider.Provider,
 	cache cache.ICache,
+	publisher broker.Publisher,
 ) *ucLoginUser {
 	return &ucLoginUser{
 		store:               store,
@@ -55,6 +59,7 @@ func NewUseCaseLogin(store FindUserStore,
 		tokProvider:         tokProvider,
 		refreshTokProvider:  refreshTokProvider,
 		cache:               cache,
+		publisher:           publisher,
 	}
 }
 
@@ -90,14 +95,16 @@ func (uc *ucLoginUser) Login(ctx context.Context, form *dto.LoginUserRequest) (*
 		roleIds[idx] = role.RoleID
 	}
 
-	rolePermissions, _, err := uc.rolePermissionStore.FindAll(ctx, func(db *gorm.DB) *gorm.DB {
-		return db.Where("role_id IN (?)", roleIds)
-	})
-	var permissions []uint
-	for _, rolePermission := range rolePermissions {
-		permissions = append(permissions, rolePermission.PermissionID)
+	type value struct {
+		RoleIDs []uint
+		UserID  uint
 	}
-	uc.cache.Set(fmt.Sprintf(common.UserPermissionCacheKey, user.ID), permissions, common.DefaultCacheExpiration)
+	var val = value{
+		RoleIDs: roleIds,
+		UserID:  user.ID,
+	}
+	byteVal, _ := json.Marshal(val)
+	uc.publisher.Produce("", broker.Message{Value: byteVal})
 
 	accessTok, err := uc.tokProvider.Generate(tokenprovider.TokenPayload{
 		UserId: user.ID,
