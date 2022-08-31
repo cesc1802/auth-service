@@ -15,7 +15,8 @@ type Item struct {
 type ICache interface {
 	Get(key string) (interface{}, error)
 	Set(key string, value interface{}, d time.Duration) error
-	Delete(key string) error
+	Delete(key ...string) error
+	DeleteByPattern(pattern string) error
 	ItemCount() int
 	Items() map[string]Item
 }

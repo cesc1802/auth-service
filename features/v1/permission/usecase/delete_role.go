@@ -5,6 +5,7 @@ import (
 
 	"github.com/cesc1802/auth-service/common"
 	"github.com/cesc1802/auth-service/features/v1/permission/domain"
+	"github.com/cesc1802/auth-service/pkg/broker"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
 	"gorm.io/gorm"
 )
@@ -15,12 +16,14 @@ type DeletePermissionStore interface {
 }
 
 type ucDeletePermission struct {
-	store DeletePermissionStore
+	store     DeletePermissionStore
+	publisher broker.Publisher
 }
 
-func NewUseCaseDeleteStore(store DeletePermissionStore) *ucDeletePermission {
+func NewUseCaseDeleteStore(store DeletePermissionStore, publisher broker.Publisher) *ucDeletePermission {
 	return &ucDeletePermission{
-		store: store,
+		store:     store,
+		publisher: publisher,
 	}
 }
 
@@ -37,5 +40,11 @@ func (uc *ucDeletePermission) DeletePermission(ctx context.Context, id uint) err
 		return common.ErrCannotDeleteEntity(domain.EntityName, err)
 	}
 
+	uc.publisher.Produce(broker.Message{
+		Value: broker.MessageValue{
+			PermissionIDs: []uint{id},
+		},
+		Topic: common.DeletePermissionTopic,
+	})
 	return nil
 }

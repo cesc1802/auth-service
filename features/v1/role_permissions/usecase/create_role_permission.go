@@ -2,11 +2,13 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/cesc1802/auth-service/common"
 	"github.com/cesc1802/auth-service/entities"
 	permissionDomain "github.com/cesc1802/auth-service/features/v1/permission/domain"
 	"github.com/cesc1802/auth-service/features/v1/role_permissions/domain"
 	"github.com/cesc1802/auth-service/features/v1/role_permissions/dto"
+	"github.com/cesc1802/auth-service/pkg/broker"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -24,12 +26,14 @@ type CreateRolePermissionStore interface {
 type ucCreateRolePermission struct {
 	store           CreateRolePermissionStore
 	permissionStore FindAllRoleStore
+	publisher       broker.Publisher
 }
 
-func NewUseCaseRolePermission(store CreateRolePermissionStore, permissionStore FindAllRoleStore) *ucCreateRolePermission {
+func NewUseCaseRolePermission(store CreateRolePermissionStore, permissionStore FindAllRoleStore, publisher broker.Publisher) *ucCreateRolePermission {
 	return &ucCreateRolePermission{
 		store:           store,
 		permissionStore: permissionStore,
+		publisher:       publisher,
 	}
 }
 
@@ -70,5 +74,11 @@ func (uc *ucCreateRolePermission) CreateRolePermission(ctx context.Context, form
 		return common.ErrCannotCreateEntity("", err)
 	}
 
+	uc.publisher.Produce(broker.Message{
+		Value: broker.MessageValue{
+			RoleIDs: []uint{form.RoleID},
+		},
+		Topic: common.AssignRolePermissionTopic,
+	})
 	return nil
 }

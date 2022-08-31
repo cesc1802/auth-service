@@ -2,10 +2,12 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/cesc1802/auth-service/common"
 	rolePermissionDomain "github.com/cesc1802/auth-service/features/v1/role_permissions/domain"
+	userRoleDomain "github.com/cesc1802/auth-service/features/v1/user_role/domain"
 	"github.com/cesc1802/auth-service/pkg/broker"
 	"github.com/cesc1802/auth-service/pkg/cache"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
@@ -17,36 +19,52 @@ type FindRolePermissionStore interface {
 	generic.IFindAllStore[rolePermissionDomain.RolePermission]
 }
 
+type FindUserRoleStore interface {
+	generic.IFindAllStore[userRoleDomain.UserRole]
+}
+
 type cacheUsecase struct {
-	store FindRolePermissionStore
-	cache cache.ICache
+	rolePermstore FindRolePermissionStore
+	userRoleStore FindUserRoleStore
+	cache         cache.ICache
 }
 
 func NewCacheUseCase(
-	store FindRolePermissionStore,
+	rolePermstore FindRolePermissionStore,
+	userRoleStore FindUserRoleStore,
 	cache cache.ICache,
 ) *cacheUsecase {
 	return &cacheUsecase{
-		store: store,
-		cache: cache,
+		rolePermstore: rolePermstore,
+		userRoleStore: userRoleStore,
+		cache:         cache,
 	}
 }
 
 func (uc *cacheUsecase) Handler(delivery amqp.Delivery) {
 	var message broker.Message
-
-	type value struct {
-		RoleIDs []uint
-		UserID  uint
-	}
-	var val value
-	err := message.Unmarshal(delivery.Body, &val)
+	err := json.Unmarshal(delivery.Body, &message)
 	if err != nil {
 		panic(err)
 	}
-	rolePermissions, _, _ := uc.store.FindAll(context.Background(), func(db *gorm.DB) *gorm.DB {
+	switch message.Topic {
+	case common.LoginTopic:
+		uc.loginHandler(message.Value)
+	case common.AssignRolePermissionTopic, common.RemoveRolePermissionTopic, common.DeleteRoleTopic:
+		uc.roleHandler(message.Value)
+	case common.DeletePermissionTopic:
+		uc.deletePermissionHandler(message.Value)
+	}
+}
+
+func (uc *cacheUsecase) loginHandler(val broker.MessageValue) {
+	rolePermissions, _, _ := uc.rolePermstore.FindAll(context.Background(), func(db *gorm.DB) *gorm.DB {
 		return db.Where("role_id IN (?)", val.RoleIDs)
 	})
+
+	if len(rolePermissions) == 0 {
+		return
+	}
 
 	var uniquePerms = make(map[uint]bool)
 	var permissions []uint
@@ -58,4 +76,51 @@ func (uc *cacheUsecase) Handler(delivery amqp.Delivery) {
 		permissions = append(permissions, rolePermission.PermissionID)
 	}
 	uc.cache.Set(fmt.Sprintf(common.UserPermissionCacheKey, val.UserID), permissions, common.DefaultCacheExpiration)
+}
+
+func (uc *cacheUsecase) roleHandler(val broker.MessageValue) {
+	userRoles, _, _ := uc.userRoleStore.FindAll(context.Background(), func(db *gorm.DB) *gorm.DB {
+		return db.Where("role_id IN (?)", val.RoleIDs)
+	})
+
+	if len(userRoles) == 0 {
+		return
+	}
+
+	var cacheKeys []string
+	for _, userRole := range userRoles {
+		cacheKeys = append(cacheKeys, fmt.Sprintf(common.UserPermissionCacheKey, userRole.UserID))
+	}
+
+	uc.cache.Delete(cacheKeys...)
+}
+
+func (uc *cacheUsecase) deletePermissionHandler(val broker.MessageValue) {
+	rolePerms, _, _ := uc.rolePermstore.FindAll(context.Background(), func(db *gorm.DB) *gorm.DB {
+		return db.Where("permission_id IN (?)", val.PermissionIDs)
+	})
+
+	if len(rolePerms) == 0 {
+		return
+	}
+
+	var roleIDs []uint
+	for _, rolePerm := range rolePerms {
+		roleIDs = append(roleIDs, rolePerm.RoleID)
+	}
+
+	userRoles, _, _ := uc.userRoleStore.FindAll(context.Background(), func(db *gorm.DB) *gorm.DB {
+		return db.Where("role_id IN (?)", roleIDs)
+	})
+
+	if len(userRoles) == 0 {
+		return
+	}
+
+	var cacheKeys []string
+	for _, userRole := range userRoles {
+		cacheKeys = append(cacheKeys, fmt.Sprintf(common.UserPermissionCacheKey, userRole.UserID))
+	}
+
+	uc.cache.Delete(cacheKeys...)
 }

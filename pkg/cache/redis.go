@@ -34,8 +34,8 @@ func (r *RedisClient) Set(key, value string) error {
 	return r.client.Set(context.Background(), key, value, 0).Err()
 }
 
-func (r *RedisClient) Delete(key string) error {
-	return r.client.Del(context.Background(), key).Err()
+func (r *RedisClient) Delete(key ...string) error {
+	return r.client.Del(context.Background(),key...).Err()
 }
 
 func (r *RedisClient) Pipeline() redis.Pipeliner {

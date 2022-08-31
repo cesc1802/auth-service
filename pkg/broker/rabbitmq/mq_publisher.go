@@ -33,7 +33,7 @@ func NewMQPublisher(config MQConfig) *mqPublisher {
 	}
 }
 
-func (p *mqPublisher) Produce(topic string, msg broker.Message) error {
+func (p *mqPublisher) Produce(msg broker.Message) error {
 	byteVal, err := json.Marshal(msg)
 	if err != nil {
 		return err

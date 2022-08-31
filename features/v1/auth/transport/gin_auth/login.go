@@ -42,10 +42,9 @@ func Login(appCtx app_context.AppContext) gin.HandlerFunc {
 		hasher := md5.NewMD5Hash()
 		atProvider := appCtx.GetATProvider()
 		rtProvider := appCtx.GetRTProvider()
-		cache := appCtx.GetAppCache()
 		publisher := appCtx.GetPublisher()
 
-		uc := usecase.NewUseCaseLogin(store, userRoleStore, rolePermissionStore, hasher, atProvider, rtProvider, cache, publisher)
+		uc := usecase.NewUseCaseLogin(store, userRoleStore, rolePermissionStore, hasher, atProvider, rtProvider, publisher)
 
 		data, err := uc.Login(c.Request.Context(), &form)
 		if err != nil {

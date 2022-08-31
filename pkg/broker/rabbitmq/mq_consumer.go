@@ -27,7 +27,7 @@ func NewMQConsumer(config MQConfig) *mqConsumer {
 	}
 }
 
-func (c *mqConsumer) Subscribe(topic string, handler func(delivery amqp.Delivery)) error {
+func (c *mqConsumer) Subscribe(handler func(delivery amqp.Delivery)) error {
 	return c.Consume(handler)
 }
 

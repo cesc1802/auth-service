@@ -2,8 +2,10 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/cesc1802/auth-service/common"
 	"github.com/cesc1802/auth-service/features/v1/role/domain"
+	"github.com/cesc1802/auth-service/pkg/broker"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
 	"gorm.io/gorm"
 )
@@ -14,12 +16,14 @@ type DeleteRoleStore interface {
 }
 
 type ucDeleteRole struct {
-	store DeleteRoleStore
+	store     DeleteRoleStore
+	publisher broker.Publisher
 }
 
-func NewUseCaseDeleteStore(store DeleteRoleStore) *ucDeleteRole {
+func NewUseCaseDeleteStore(store DeleteRoleStore, publisher broker.Publisher) *ucDeleteRole {
 	return &ucDeleteRole{
-		store: store,
+		store:     store,
+		publisher: publisher,
 	}
 }
 
@@ -36,5 +40,11 @@ func (uc *ucDeleteRole) DeleteRole(ctx context.Context, id uint) error {
 		return common.ErrCannotDeleteEntity(domain.EntityName, err)
 	}
 
+	uc.publisher.Produce(broker.Message{
+		Value: broker.MessageValue{
+			RoleIDs: []uint{id},
+		},
+		Topic: common.DeleteRoleTopic,
+	})
 	return nil
 }

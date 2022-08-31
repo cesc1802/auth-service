@@ -26,11 +26,12 @@ import (
 func DeletePermission(appCtx app_context.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		db := appCtx.GetAppGorm()
+		publisher := appCtx.GetPublisher()
 		extension := extention.NewContextExtension(c)
 		PermissionId := extension.GetPathParam("id", 0)
 
 		store := storage.NewMySqlPermissionStore(db)
-		uc := usecase.NewUseCaseDeleteStore(store)
+		uc := usecase.NewUseCaseDeleteStore(store, publisher)
 
 		if err := uc.DeletePermission(c.Request.Context(), PermissionId); err != nil {
 			panic(err)

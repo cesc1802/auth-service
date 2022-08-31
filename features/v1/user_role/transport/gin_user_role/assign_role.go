@@ -44,7 +44,9 @@ func AssignRolesToUser(appCtx app_context.AppContext) gin.HandlerFunc {
 		}
 
 		userRoleCacheKey := fmt.Sprintf(common.UserRoleCacheKey, form.UserID)
+		userPermissionCacheKey := fmt.Sprintf(common.UserPermissionCacheKey, form.UserID)
 		cache.Delete(userRoleCacheKey)
+		cache.Delete(userPermissionCacheKey)
 		c.JSON(http.StatusOK, common.SimpleSuccessResponse(true))
 	}
 }

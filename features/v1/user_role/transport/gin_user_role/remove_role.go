@@ -1,6 +1,7 @@
 package gin_user_role
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/cesc1802/auth-service/app_context"
@@ -27,6 +28,7 @@ func RemoveRolesFromUser(appCtx app_context.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var form dto.RemoveRolesRequest
 		db := appCtx.GetAppGorm()
+		cache := appCtx.GetAppCache()
 
 		if err := c.ShouldBind(&form); err != nil {
 			c.JSON(http.StatusBadRequest, err)
@@ -39,6 +41,10 @@ func RemoveRolesFromUser(appCtx app_context.AppContext) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, err)
 		}
 
+		userRoleCacheKey := fmt.Sprintf(common.UserRoleCacheKey, form.UserID)
+		userPermissionCacheKey := fmt.Sprintf(common.UserPermissionCacheKey, form.UserID)
+		cache.Delete(userRoleCacheKey)
+		cache.Delete(userPermissionCacheKey)
 		c.JSON(http.StatusOK, common.SimpleSuccessResponse(true))
 	}
 }
