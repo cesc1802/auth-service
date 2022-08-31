@@ -40,7 +40,7 @@ func (uc *ucDeletePermission) DeletePermission(ctx context.Context, id uint) err
 		return common.ErrCannotDeleteEntity(domain.EntityName, err)
 	}
 
-	uc.publisher.Produce(broker.Message{
+	uc.publisher.Produce(ctx, broker.Message{
 		Value: broker.MessageValue{
 			PermissionIDs: []uint{id},
 		},

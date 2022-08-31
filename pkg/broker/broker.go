@@ -1,14 +1,18 @@
 package broker
 
-import "github.com/streadway/amqp"
+import (
+	"context"
+
+	"github.com/streadway/amqp"
+)
 
 type Publisher interface {
-	Produce(msg Message) error
+	Produce(context.Context, Message) error
 	Close()
 }
 
 type Subscriber interface {
-	Subscribe(handler func(delivery amqp.Delivery)) error
+	Subscribe(context.Context, func(delivery amqp.Delivery)) error
 	Close()
 }
 

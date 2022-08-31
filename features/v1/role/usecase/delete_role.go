@@ -40,7 +40,7 @@ func (uc *ucDeleteRole) DeleteRole(ctx context.Context, id uint) error {
 		return common.ErrCannotDeleteEntity(domain.EntityName, err)
 	}
 
-	uc.publisher.Produce(broker.Message{
+	uc.publisher.Produce(ctx, broker.Message{
 		Value: broker.MessageValue{
 			RoleIDs: []uint{id},
 		},

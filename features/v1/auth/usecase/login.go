@@ -90,7 +90,7 @@ func (uc *ucLoginUser) Login(ctx context.Context, form *dto.LoginUserRequest) (*
 		roleIds[idx] = role.RoleID
 	}
 
-	uc.publisher.Produce(broker.Message{
+	uc.publisher.Produce(ctx, broker.Message{
 		Value: broker.MessageValue{
 			RoleIDs: roleIds,
 			UserID:  user.ID,

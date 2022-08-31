@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -33,7 +34,7 @@ func NewMQPublisher(config MQConfig) *mqPublisher {
 	}
 }
 
-func (p *mqPublisher) Produce(msg broker.Message) error {
+func (p *mqPublisher) Produce(ctx context.Context, msg broker.Message) error {
 	byteVal, err := json.Marshal(msg)
 	if err != nil {
 		return err

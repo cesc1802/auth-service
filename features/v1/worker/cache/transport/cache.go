@@ -1,6 +1,8 @@
 package transport
 
 import (
+	"context"
+
 	"github.com/cesc1802/auth-service/app_context"
 	"github.com/cesc1802/auth-service/features/v1/role_permissions/storage"
 	storage2 "github.com/cesc1802/auth-service/features/v1/user_role/storage"
@@ -16,5 +18,5 @@ func LoginCacheWorker(appCtx app_context.AppContext) {
 	store2 := storage2.NewMySqlUserRoleStore(db)
 	cacheUc := usecase.NewCacheUseCase(store, store2, cache)
 
-	subscriber.Subscribe(cacheUc.Handler)
+	subscriber.Subscribe(context.Background(), cacheUc.Handler)
 }

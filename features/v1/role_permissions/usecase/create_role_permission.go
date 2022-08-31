@@ -74,7 +74,7 @@ func (uc *ucCreateRolePermission) CreateRolePermission(ctx context.Context, form
 		return common.ErrCannotCreateEntity("", err)
 	}
 
-	uc.publisher.Produce(broker.Message{
+	uc.publisher.Produce(ctx, broker.Message{
 		Value: broker.MessageValue{
 			RoleIDs: []uint{form.RoleID},
 		},
