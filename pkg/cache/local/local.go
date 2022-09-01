@@ -63,6 +63,10 @@ func (c *localCache) Delete(key string) error {
 	return nil
 }
 
+func (c *localCache) DeleteByPattern(pattern string) error {
+	return nil
+}
+
 func (c *localCache) ItemCount() int {
 	c.mu.Lock()
 	n := len(c.items)

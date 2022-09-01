@@ -1,18 +1,16 @@
 package broker
 
 import (
-	"encoding/json"
+	"github.com/cesc1802/auth-service/common"
 )
 
 type Message struct {
-	Value []byte
+	Value MessageValue
+	Topic common.MQTopic
 }
 
-func (m Message) Unmarshal(deliveryBody []byte, i interface{}) error {
-	err := json.Unmarshal(deliveryBody, &m)
-	if err != nil {
-		return err
-	}
-
-	return json.Unmarshal(m.Value, i)
+type MessageValue struct {
+	RoleIDs       []uint
+	PermissionIDs []uint
+	UserID        uint
 }

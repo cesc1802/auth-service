@@ -74,8 +74,17 @@ func (c *redisCache) Set(key string, value interface{}, d time.Duration) error {
 	return c.redisClient.Set(key, string(byteValue))
 }
 
-func (c *redisCache) Delete(key string) error {
-	return c.redisClient.Delete(key)
+func (c *redisCache) Delete(key ...string) error {
+	return c.redisClient.Delete(key...)
+}
+
+func (c *redisCache) DeleteByPattern(pattern string) error {
+	keys, err := c.redisClient.Keys(pattern)
+	if err != nil {
+		return err
+	}
+
+	return c.redisClient.Delete(keys...)
 }
 
 func (c *redisCache) ItemCount() int {

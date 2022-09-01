@@ -1,6 +1,10 @@
 package rabbitmq
 
-import "github.com/streadway/amqp"
+import (
+	"context"
+
+	"github.com/streadway/amqp"
+)
 
 type mqConsumer struct {
 	Consumer
@@ -27,7 +31,7 @@ func NewMQConsumer(config MQConfig) *mqConsumer {
 	}
 }
 
-func (c *mqConsumer) Subscribe(topic string, handler func(delivery amqp.Delivery)) error {
+func (c *mqConsumer) Subscribe(ctx context.Context, handler func(delivery amqp.Delivery)) error {
 	return c.Consume(handler)
 }
 

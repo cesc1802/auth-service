@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/cesc1802/auth-service/common"
@@ -11,7 +10,6 @@ import (
 	"github.com/cesc1802/auth-service/features/v1/user/domain"
 	userRoleDomain "github.com/cesc1802/auth-service/features/v1/user_role/domain"
 	"github.com/cesc1802/auth-service/pkg/broker"
-	"github.com/cesc1802/auth-service/pkg/cache"
 	"github.com/cesc1802/auth-service/pkg/database"
 	"github.com/cesc1802/auth-service/pkg/database/generic"
 	"github.com/cesc1802/auth-service/pkg/hash"
@@ -38,7 +36,6 @@ type ucLoginUser struct {
 	hasher              hash.Hasher
 	tokProvider         tokenprovider.Provider
 	refreshTokProvider  tokenprovider.Provider
-	cache               cache.ICache
 	publisher           broker.Publisher
 }
 
@@ -48,7 +45,6 @@ func NewUseCaseLogin(store FindUserStore,
 	hasher hash.Hasher,
 	tokProvider tokenprovider.Provider,
 	refreshTokProvider tokenprovider.Provider,
-	cache cache.ICache,
 	publisher broker.Publisher,
 ) *ucLoginUser {
 	return &ucLoginUser{
@@ -58,7 +54,6 @@ func NewUseCaseLogin(store FindUserStore,
 		hasher:              hasher,
 		tokProvider:         tokProvider,
 		refreshTokProvider:  refreshTokProvider,
-		cache:               cache,
 		publisher:           publisher,
 	}
 }
@@ -95,16 +90,13 @@ func (uc *ucLoginUser) Login(ctx context.Context, form *dto.LoginUserRequest) (*
 		roleIds[idx] = role.RoleID
 	}
 
-	type value struct {
-		RoleIDs []uint
-		UserID  uint
-	}
-	var val = value{
-		RoleIDs: roleIds,
-		UserID:  user.ID,
-	}
-	byteVal, _ := json.Marshal(val)
-	uc.publisher.Produce("", broker.Message{Value: byteVal})
+	uc.publisher.Produce(ctx, broker.Message{
+		Value: broker.MessageValue{
+			RoleIDs: roleIds,
+			UserID:  user.ID,
+		},
+		Topic: common.LoginTopic,
+	})
 
 	accessTok, err := uc.tokProvider.Generate(tokenprovider.TokenPayload{
 		UserId: user.ID,

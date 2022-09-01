@@ -1,6 +1,8 @@
 package gin_role_permission
 
 import (
+	"net/http"
+
 	"github.com/cesc1802/auth-service/app_context"
 	"github.com/cesc1802/auth-service/common"
 	storage2 "github.com/cesc1802/auth-service/features/v1/permission/storage"
@@ -8,7 +10,6 @@ import (
 	"github.com/cesc1802/auth-service/features/v1/role_permissions/storage"
 	"github.com/cesc1802/auth-service/features/v1/role_permissions/usecase"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // CreateBatchRolePermission
@@ -27,6 +28,7 @@ func CreateBatchRolePermission(appCtx app_context.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var form dto.CreateRolePermissionRequest
 		db := appCtx.GetAppGorm()
+		publisher := appCtx.GetPublisher()
 
 		if err := c.ShouldBind(&form); err != nil {
 			panic(err)
@@ -34,7 +36,7 @@ func CreateBatchRolePermission(appCtx app_context.AppContext) gin.HandlerFunc {
 
 		store := storage.NewMySqlRolePermissionStore(db)
 		permissionStore := storage2.NewMySqlPermissionStore(db)
-		uc := usecase.NewUseCaseRolePermission(store, permissionStore)
+		uc := usecase.NewUseCaseRolePermission(store, permissionStore, publisher)
 
 		if err := uc.CreateRolePermission(c.Request.Context(), &form); err != nil {
 			panic(err)

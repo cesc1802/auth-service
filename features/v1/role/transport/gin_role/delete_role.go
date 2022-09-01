@@ -1,13 +1,14 @@
 package gin_role
 
 import (
+	"net/http"
+
 	"github.com/cesc1802/auth-service/app_context"
 	"github.com/cesc1802/auth-service/common"
 	"github.com/cesc1802/auth-service/features/v1/role/storage"
 	"github.com/cesc1802/auth-service/features/v1/role/usecase"
 	"github.com/cesc1802/auth-service/pkg/httpserver/extention"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // DeleteRole
@@ -25,11 +26,12 @@ import (
 func DeleteRole(appCtx app_context.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		db := appCtx.GetAppGorm()
+		publisher := appCtx.GetPublisher()
 		extension := extention.NewContextExtension(c)
 		roleId := extension.GetPathParam("id", 0)
 
 		store := storage.NewMySqlRoleStore(db)
-		uc := usecase.NewUseCaseDeleteStore(store)
+		uc := usecase.NewUseCaseDeleteStore(store, publisher)
 
 		if err := uc.DeleteRole(c.Request.Context(), roleId); err != nil {
 			panic(err)
