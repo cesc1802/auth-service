@@ -17,10 +17,12 @@ import (
 
 type FindRolePermissionStore interface {
 	generic.IFindAllStore[rolePermissionDomain.RolePermission]
+	generic.DeleteByConditionStore[rolePermissionDomain.RolePermission]
 }
 
 type FindUserRoleStore interface {
 	generic.IFindAllStore[userRoleDomain.UserRole]
+	generic.DeleteByConditionStore[userRoleDomain.UserRole]
 }
 
 type cacheUsecase struct {
@@ -79,9 +81,12 @@ func (uc *cacheUsecase) loginHandler(val broker.MessageValue) {
 }
 
 func (uc *cacheUsecase) roleHandler(val broker.MessageValue) {
-	userRoles, _, _ := uc.userRoleStore.FindAll(context.Background(), func(db *gorm.DB) *gorm.DB {
+	ctx := context.Background()
+	filter := func(db *gorm.DB) *gorm.DB {
 		return db.Where("role_id IN (?)", val.RoleIDs)
-	})
+	}
+
+	userRoles, _, _ := uc.userRoleStore.FindAll(ctx, filter)
 
 	if len(userRoles) == 0 {
 		return
@@ -93,12 +98,18 @@ func (uc *cacheUsecase) roleHandler(val broker.MessageValue) {
 	}
 
 	uc.cache.Delete(cacheKeys...)
+
+	uc.rolePermstore.DeleteByCondition(ctx, filter)
+
+	uc.userRoleStore.DeleteByCondition(ctx, filter)
 }
 
 func (uc *cacheUsecase) deletePermissionHandler(val broker.MessageValue) {
-	rolePerms, _, _ := uc.rolePermstore.FindAll(context.Background(), func(db *gorm.DB) *gorm.DB {
+	ctx := context.Background()
+	filter := func(db *gorm.DB) *gorm.DB {
 		return db.Where("permission_id IN (?)", val.PermissionIDs)
-	})
+	}
+	rolePerms, _, _ := uc.rolePermstore.FindAll(ctx, filter)
 
 	if len(rolePerms) == 0 {
 		return
@@ -109,7 +120,7 @@ func (uc *cacheUsecase) deletePermissionHandler(val broker.MessageValue) {
 		roleIDs = append(roleIDs, rolePerm.RoleID)
 	}
 
-	userRoles, _, _ := uc.userRoleStore.FindAll(context.Background(), func(db *gorm.DB) *gorm.DB {
+	userRoles, _, _ := uc.userRoleStore.FindAll(ctx, func(db *gorm.DB) *gorm.DB {
 		return db.Where("role_id IN (?)", roleIDs)
 	})
 
@@ -123,4 +134,6 @@ func (uc *cacheUsecase) deletePermissionHandler(val broker.MessageValue) {
 	}
 
 	uc.cache.Delete(cacheKeys...)
+
+	uc.rolePermstore.DeleteByCondition(ctx, filter)
 }
