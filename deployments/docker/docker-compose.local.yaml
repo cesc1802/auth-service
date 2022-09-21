@@ -1,10 +1,51 @@
 version: '3.8'
 services:
+  app-migrate:
+    depends_on:
+      - mysql
+    build:
+      context: ../..
+    container_name: app-migrate
+    networks:
+      - auth_service
+    env_file: .env
+    command: ["migrate"]
+    links:
+      - fluentd
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
+
+  app:
+    depends_on:
+      - mysql
+      - rabbitmq
+    build:
+      context: ../..
+    container_name: app
+    ports:
+      - "7172:7172"
+    networks:
+      - auth_service
+    env_file: .env
+    command: ["serv"]
+    links:
+      - fluentd
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
+
   mysql:
     container_name: auth_service
     image: bitnami/mysql:8.0
     ports:
       - "3306:3306"
+    networks:
+      - auth_service
     environment:
       - MYSQL_ROOT_PASSWORD=admin@1802
       - MYSQL_DATABASE=auth_service
@@ -23,14 +64,51 @@ services:
       - "15672:15672"
       - "5672:5672"
       - "1883:1883"
+    networks:
+      - auth_service
 
   redis:
     image: redis:7-alpine
+    container_name: redis
     ports:
       - "6379:6379"
     environment:
       - REDIS_PASSWORD=admin@1802
+    networks:
+      - auth_service
+
+  fluentd:
+      build: ./fluentd
+      container_name: fluentd
+      volumes:
+        - ./fluentd/conf:/fluentd/etc
+      links:
+        - "elasticsearch"
+      ports:
+        - "24224:24224"
+        - "24224:24224/udp"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.1
+    container_name: elasticsearch
+    environment:
+      - "discovery.type=single-node"
+    expose:
+      - "9200"
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.13.1
+    container_name: kibana
+    links:
+      - "elasticsearch"
+    ports:
+      - "5601:5601"
 
 volumes:
   data:
     driver: local
+
+networks:
+  auth_service:
