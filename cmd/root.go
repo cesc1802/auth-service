@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/cesc1802/auth-service/cmd/http"
+	"github.com/cesc1802/auth-service/cmd/migration"
 	"github.com/cesc1802/auth-service/cmd/worker"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,6 +30,7 @@ func init() {
 			viper.SetConfigName("config/")
 		}
 
+		viper.SetEnvPrefix("auth")
 		replacer := strings.NewReplacer("-", "_")
 		viper.SetEnvKeyReplacer(replacer)
 		viper.SetConfigType("yaml")
@@ -44,6 +46,7 @@ func init() {
 
 	http.RegisterCmdRecursive(RootCmd)
 	worker.RegisterWorkerCmdRecursive(RootCmd)
+	migration.RegisterCmdRecursive(RootCmd)
 
 }
 
